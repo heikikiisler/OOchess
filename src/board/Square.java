@@ -17,4 +17,11 @@ public class Square {
     public int getValue() {
         return piece.getValue();
     }
+
+    public void printPiece() {
+        if (piece != null) {
+            System.out.printf(piece.getPieceLetter());
+        }
+        System.out.printf(".");
+    }
 }

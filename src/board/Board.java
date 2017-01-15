@@ -13,6 +13,10 @@ public class Board {
     private boolean blackQueenCastling = true;
 
 
+    public Board() {
+        makeSquares();
+    }
+
     private void makeSquares() {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
@@ -23,5 +27,14 @@ public class Board {
 
     public Square getSquare(int row, int col) {
         return squares.get(8 * row + col);
+    }
+
+    public void printBoard() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                squares.get(i + j * 8).printPiece();
+            }
+            System.out.println();
+        }
     }
 }
