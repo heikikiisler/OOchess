@@ -5,12 +5,25 @@ import java.util.List;
 
 public class Board {
 
-    private List<Square> squares = new ArrayList<>(64);
+    private List<List<Square>> squares = new ArrayList<>(8);
 
     private boolean whiteKingCastling = true;
     private boolean whiteQueenCastling = true;
     private boolean blackKingCastling = true;
     private boolean blackQueenCastling = true;
+
+    // TODO: 01/03/2017 3 move draw rule
+    private int currentDrawMoves = 0;
+
+    private Square enPassantSquare;
+
+    private boolean whiteInCheck = false;
+    private boolean blackInCheck = false;
+
+
+    private boolean whiteInCheckMate = false;
+    private boolean blackInCheckMate = false;
+
 
 
     public Board() {
@@ -19,22 +32,20 @@ public class Board {
 
     private void makeSquares() {
         for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                squares.add(new Square(i, j));
-            }
+            squares.set(i, new ArrayList<Square>(8));
         }
-    }
-
-    public Square getSquare(int row, int col) {
-        return squares.get(8 * row + col);
     }
 
     public void printBoard() {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                squares.get(i + j * 8).printPiece();
+        for (List<Square> row : squares) {
+            for (Square square : row) {
+                square.printPiece();
             }
             System.out.println();
         }
+    }
+
+    private void makeStartPosition() {
+
     }
 }

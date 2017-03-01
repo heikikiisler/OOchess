@@ -1,8 +1,16 @@
 package piece;
 
-public interface Piece {
+public abstract class Piece {
 
-    int getValue();
+    private int row;
+    private int col;
 
-    String getPieceLetter();
+    public Piece(int row, int col) {
+        this.row = row;
+        this.col = col;
+    }
+
+    public String getLetter() {
+        return ".";
+    }
 }
