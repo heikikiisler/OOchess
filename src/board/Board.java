@@ -4,8 +4,7 @@ import side.Side;
 
 // Main place for ideas and comments
 // TODO: 19.09.2017 3 move draw rule (move history?)
-// TODO: 19.09.2017 Evaluation class
-// TODO: 19.09.2017 Game / Running class
+// TODO: 19.09.2017 LATER: Game / Running / Playing class
 // TODO: 19.09.2017 LATER: Engine input compatible with international standards
 public class Board {
 
@@ -13,6 +12,9 @@ public class Board {
 
     private char[] whitePieces = new char[]{'P', 'R', 'N', 'B', 'Q', 'K'};
     private char[] blackPieces = new char[]{'p', 'r', 'n', 'b', 'q', 'k'};
+
+    private char[] whiteQueeningPieces = new char[]{'R', 'N', 'B', 'Q'};
+    private char[] blackQueeningPieces = new char[]{'r', 'n', 'b', 'q'};
 
     private boolean whiteKingSideCastling = true;
     private boolean whiteQueenSideCastling = true;
@@ -41,14 +43,10 @@ public class Board {
 
     public void move(int start_row, int start_col, int end_row, int end_col) {
         char piece = getPiece(start_row, start_col);
-        totalPlies++;
-        currentInactivePlies++;
-        enPassantRow = 0;
-        enPassantCol = 0;
+        refreshAlways();
         // Reset 50 move rule counter
         if (Character.toLowerCase(piece) == 'p' || getPiece(end_row, end_col) != '.') {
-            currentInactivePlies = 0;
-            System.out.println("inactive reset");
+            resetInactivePlies();
         }
         // Set en passant coordinates
         if (Character.toLowerCase(piece) == 'p' && (Math.abs(start_row - end_row) == 2)) {
@@ -75,6 +73,38 @@ public class Board {
         // Finally move piece
         setPiece(piece, end_row, end_col);
         setPiece('.', start_row, start_col);
+        printBoard();
+    }
+
+    public void specialMove(int[][] coordinateValues) {
+        refreshAlways();
+        if (coordinateValues.length < 4) {
+            resetInactivePlies();
+        } else {
+            if (coordinateValues[1][0] == 'K') {
+                whiteQueenSideCastling = false;
+                whiteKingSideCastling = false;
+            } else {
+                blackQueenSideCastling = false;
+                blackKingSideCastling = false;
+            }
+        }
+        for (int[] coo: coordinateValues) {
+            setPiece((char)(coo[0]), coo[1], coo[2]);
+        }
+        printBoard();
+    }
+
+    private void resetInactivePlies() {
+        currentInactivePlies = 0;
+    }
+
+
+    private void refreshAlways() {
+        totalPlies++;
+        currentInactivePlies++;
+        enPassantRow = 0;
+        enPassantCol = 0;
     }
 
     public void printBoard() {
@@ -114,6 +144,10 @@ public class Board {
         return Side.BLACK;
     }
 
+    public boolean pieceIsSide(char piece, Side side) {
+        return getPieceSide(piece) == side;
+    }
+
     private void setUpBoard() {
         sideToMove = Side.WHITE;
         pieces = new char[64];
@@ -143,4 +177,35 @@ public class Board {
         setPiece('k', 7, 4);
     }
 
+    public int getEnPassantRow() {
+        return enPassantRow;
+    }
+
+    public int getEnPassantCol() {
+        return enPassantCol;
+    }
+
+    public boolean getWhiteKingSideCastling() {
+        return whiteKingSideCastling && getPiece(0, 6) == '.' && getPiece(0, 5) == '.';
+    }
+
+    public boolean getWhiteQueenSideCastling() {
+        return whiteQueenSideCastling && getPiece(0, 1) == '.' && getPiece(0, 2) == '.' && getPiece(0, 3) == '.';
+    }
+
+    public boolean getBlackKingSideCastling() {
+        return blackKingSideCastling;
+    }
+
+    public boolean getBlackQueenSideCastling() {
+        return blackQueenSideCastling;
+    }
+
+    public char[] getWhiteQueeningPieces() {
+        return whiteQueeningPieces;
+    }
+
+    public char[] getBlackQueeningPieces() {
+        return blackQueeningPieces;
+    }
 }
