@@ -4,6 +4,7 @@ import board.Board;
 import side.Side;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 // TODO: 19.09.2017 Filter moves that leave king in check
 // TODO: 20.09.2017 piece attacking and defending functions
@@ -17,13 +18,13 @@ import java.util.ArrayList;
 // }
 public class Moves {
 
-    private Board board;
+    public Board board;
 
     public Moves(Board board) {
         this.board = board;
     }
 
-    public ArrayList<int[]> getAvailableMoves(int row, int col) {
+    public ArrayList<ArrayList<int[]>> getAvailableMoves(int row, int col) {
         char piece = board.getPiece(row, col);
         switch (piece) {
             case 'P':
@@ -54,8 +55,8 @@ public class Moves {
         }
     }
 
-    public ArrayList<ArrayList<int[]>> getAllAvailableMoves(Side side) {
-        ArrayList<ArrayList<int[]>> moves = new ArrayList<>();
+    public ArrayList<ArrayList<ArrayList<int[]>>> getAllAvailableMoves(Side side) {
+        ArrayList<ArrayList<ArrayList<int[]>>> moves = new ArrayList<>();
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
                 char piece = board.getPiece(r, c);
@@ -75,47 +76,35 @@ public class Moves {
         return isOnBoard(row, col) && side != board.getPieceSide(board.getPiece(row, col));
     }
 
-    public ArrayList<int[]> getKnightMoves(Side side, int row, int col) {
-        int[][] vectors = {{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}, {2, -1}, {2, 1}};
-        return getSingleVectorMoves(side, row, col, vectors);
+    public ArrayList<ArrayList<int[]>> getKnightMoves(Side side, int row, int col) {
+        int[][][] vectors = {{{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}, {2, -1}, {2, 1}}};
+        return getVectorMoves(side, row, col, vectors);
     }
 
-    public ArrayList<int[]> getKingMoves(Side side, int row, int col) {
-        int[][] vectors = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
-        return getSingleVectorMoves(side, row, col, vectors);
+    public ArrayList<ArrayList<int[]>> getKingMoves(Side side, int row, int col) {
+        int[][][] vectors = {{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}};
+        return getVectorMoves(side, row, col, vectors);
     }
 
-    private ArrayList<int[]> getSingleVectorMoves(Side side, int row, int col, int[][] vectors) {
-        ArrayList<int[]> moves = new ArrayList<>();
-        for (int[] vector: vectors) {
-            int r = vector[0] + row;
-            int c = vector[1] + col;
-            if (isAvailable(side, r, c)) {
-                moves.add(new int[]{r, c});
-            }
-        }
-        return moves;
-    }
-
-    public ArrayList<int[]> getRookMoves(Side side, int row, int col) {
+    public ArrayList<ArrayList<int[]>> getRookMoves(Side side, int row, int col) {
         int[][][] vectors =
             {{{1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}},
             {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}},
             {{0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6}, {0, -7}},
             {{-1, 0}, {-2, 0}, {-3, 0}, {-4, 0}, {-5, 0}, {-6, 0}, {-7, 0}}};
-        return findVectorMoves(side, row, col, vectors);
+        return getVectorMoves(side, row, col, vectors);
     }
 
-    public ArrayList<int[]> getBishopMoves(Side side, int row, int col) {
+    public ArrayList<ArrayList<int[]>> getBishopMoves(Side side, int row, int col) {
         int[][][] vectors =
             {{{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7}},
             {{-1, 1}, {-2, 2}, {-3, 3}, {-4, 4}, {-5, 5}, {-6, 6}, {-7, 7}},
             {{1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {7, -7}},
             {{-1, -1}, {-2, -2}, {-3, -3}, {-4, -4}, {-5, -5}, {-6, -6}, {-7, -7}}};
-        return findVectorMoves(side, row, col, vectors);
+        return getVectorMoves(side, row, col, vectors);
     }
 
-    public ArrayList<int[]> getQueenMoves(Side side, int row, int col) {
+    public ArrayList<ArrayList<int[]>> getQueenMoves(Side side, int row, int col) {
         int[][][] vectors =
             {{{1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}},
             {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}},
@@ -125,18 +114,26 @@ public class Moves {
             {{-1, 1}, {-2, 2}, {-3, 3}, {-4, 4}, {-5, 5}, {-6, 6}, {-7, 7}},
             {{1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {7, -7}},
             {{-1, -1}, {-2, -2}, {-3, -3}, {-4, -4}, {-5, -5}, {-6, -6}, {-7, -7}}};
-        return findVectorMoves(side, row, col, vectors);
+        return getVectorMoves(side, row, col, vectors);
     }
 
-    private ArrayList<int[]> findVectorMoves(Side side, int row, int col, int[][][] vectors) {
+    private ArrayList<ArrayList<int[]>> getVectorMoves(Side side, int row, int col, int[][][] vectors) {
         ArrayList<int[]> moves = new ArrayList<>();
+        ArrayList<int[]> attacked = new ArrayList<>();
+        ArrayList<int[]> defended = new ArrayList<>();
         for (int[][] subVectors: vectors) {
             for (int[] vector: subVectors) {
                 int r = vector[0] + row;
                 int c = vector[1] + col;
-                if (isAvailable(side, r, c)) {
-                    moves.add(new int[]{r, c});
-                    if (board.getPiece(r, c) != '.') {
+                if (isOnBoard(r, c)) {
+                    char targetPiece = board.getPiece(r, c);
+                    if (targetPiece == '.') {
+                        moves.add(new int[]{r, c});
+                    } else if (board.getPieceSide(targetPiece) != side) {
+                        attacked.add(new int[]{r, c, targetPiece});
+                        break;
+                    } else {
+                        defended.add(new int[]{r, c, targetPiece});
                         break;
                     }
                 } else {
@@ -144,11 +141,11 @@ public class Moves {
                 }
             }
         }
-        return moves;
+        return new ArrayList<>(Arrays.asList(moves, attacked, defended));
     }
 
-    public ArrayList<int[]> getPawnMoves(Side side, int row, int col) {
-        int[][] takingVectors = new int[][]{{1, 1}, {1, -1}};
+    public ArrayList<ArrayList<int[]>> getPawnMoves(Side side, int row, int col) {
+        int[][][] takingVectors = {{{1, 1}, {1, -1}}};
         int multiplier = getPawnSideMultiplier(side);
         ArrayList<int[]> moves = new ArrayList<>();
         if (board.getPiece(row + multiplier, col) == '.') {
@@ -157,15 +154,9 @@ public class Moves {
                 moves.add(new int[]{row + multiplier * 2, col});
             }
         }
-        for (int[] vector: takingVectors) {
-            int r = vector[0] * multiplier + row;
-            int c = vector[1] + col;
-            Side targetSide = board.getPieceSide(board.getPiece(r, c));
-            if (side != targetSide && targetSide != Side.NEUTRAL) {
-                moves.add(new int[]{r, c});
-            }
-        }
-        return moves;
+        ArrayList<ArrayList<int[]>> takingVectorMoves = getVectorMoves(side, row, col, takingVectors);
+        takingVectorMoves.set(0, moves);
+        return takingVectorMoves;
     }
 
     public ArrayList<int[][]> getPromotionMoves(Side side, int col) {
@@ -174,7 +165,7 @@ public class Moves {
             if (board.getPiece(7, col) == '.') {
                 for (char option : board.getWhiteQueeningPieces()) {
                     moves.add(
-                            new int[][]{{'.', 7, col}, {option, 8, col}}
+                        new int[][]{{'.', 7, col}, {option, 8, col}}
                     );
                 }
             }
@@ -182,7 +173,7 @@ public class Moves {
             if (board.getPiece(0, col) == '.') {
                 for (char option : board.getBlackQueeningPieces()) {
                     moves.add(
-                            new int[][]{{'.', 1, col}, {option, 0, col}}
+                        new int[][]{{'.', 1, col}, {option, 0, col}}
                     );
                 }
             }

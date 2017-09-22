@@ -1,8 +1,11 @@
 package main;
 
 import board.Board;
-import moves.Moves;
 import side.Side;
+import moves.Moves;
+import util.Conf;
+
+import java.util.HashMap;
 
 public class Main {
     public static void main(String[] args) {
@@ -21,10 +24,9 @@ public class Main {
             }
         }
         board.specialMove(moves.getEnPassantMoves(Side.BLACK).get(0));
-        for (int i = -1; i < 2; i++) {
-            for (int j = -1; j < 2; j++) {
-                System.out.print(String.format("{%d, %d}, ", i, j));
-            }
+
+        for (char piece:  new char[]{'p', 'r', 'n', 'b', 'q', 'k'}) {
+            System.out.println(String.format("%c: %d", piece, Conf.getPieceValue(piece)));
         }
 
     }
