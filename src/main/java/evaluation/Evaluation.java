@@ -1,6 +1,7 @@
 package evaluation;
 
 import board.Board;
+import com.esotericsoftware.kryo.Kryo;
 import moves.Moves;
 import util.Conf;
 
@@ -20,10 +21,12 @@ public class Evaluation {
 
     private Moves moves;
     private Board board;
+    private Kryo kryo;
 
     public Evaluation(Moves moves) {
         this.moves = moves;
         this.board = moves.board;
+        this.kryo = new Kryo();
     }
 
     public int getBoardMaterialValue(Board board) {
@@ -60,6 +63,7 @@ public class Evaluation {
             for (int[] move: movableMoves) {
                 double tryMoveValue = getTryMoveValue(start, move);
                 if (tryMoveValue * side > highestValue) {
+                    highestValue = tryMoveValue * side;
                     bestMove = new int[][]{start, move};
                 }
             }
@@ -68,7 +72,7 @@ public class Evaluation {
     }
 
     public double getTryMoveValue(int[] start, int[] end) {
-        Board board = this.board;
+        Board board = kryo.copy(this.board);
         board.move(start[0], start[1], end[0], end[1]);
         return getBoardTotalValue(board);
     }
