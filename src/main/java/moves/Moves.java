@@ -1,7 +1,6 @@
 package moves;
 
 import board.Board;
-import side.Side;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,34 +27,34 @@ public class Moves {
         char piece = board.getPiece(row, col);
         switch (piece) {
             case 'P':
-                return getPawnMoves(Side.WHITE, row, col);
+                return getPawnMoves(1, row, col);
             case 'N':
-                return getKnightMoves(Side.WHITE, row, col);
+                return getKnightMoves(1, row, col);
             case 'B':
-                return getBishopMoves(Side.WHITE, row, col);
+                return getBishopMoves(1, row, col);
             case 'R':
-                return getRookMoves(Side.WHITE, row, col);
+                return getRookMoves(1, row, col);
             case 'Q':
-                return getQueenMoves(Side.WHITE, row, col);
+                return getQueenMoves(1, row, col);
             case 'K':
-                return getKingMoves(Side.WHITE, row, col);
+                return getKingMoves(1, row, col);
             case 'p':
-                return getPawnMoves(Side.BLACK, row, col);
+                return getPawnMoves(-1, row, col);
             case 'n':
-                return getKnightMoves(Side.BLACK, row, col);
+                return getKnightMoves(-1, row, col);
             case 'b':
-                return getBishopMoves(Side.BLACK, row, col);
+                return getBishopMoves(-1, row, col);
             case 'r':
-                return getRookMoves(Side.BLACK, row, col);
+                return getRookMoves(-1, row, col);
             case 'q':
-                return getQueenMoves(Side.BLACK, row, col);
+                return getQueenMoves(-1, row, col);
             case 'k':
-                return getKingMoves(Side.WHITE, row, col);
+                return getKingMoves(1, row, col);
             default: throw new IllegalArgumentException();
         }
     }
 
-    public ArrayList<ArrayList<ArrayList<int[]>>> getAllAvailableMoves(Side side) {
+    public ArrayList<ArrayList<ArrayList<int[]>>> getAllAvailableMoves(int side) {
         ArrayList<ArrayList<ArrayList<int[]>>> moves = new ArrayList<>();
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
@@ -72,21 +71,17 @@ public class Moves {
         return !(row < 0 || row > 7 || col < 0 || col > 7);
     }
 
-    public boolean isAvailable(Side side, int row, int col) {
-        return isOnBoard(row, col) && side != board.getPieceSide(board.getPiece(row, col));
-    }
-
-    public ArrayList<ArrayList<int[]>> getKnightMoves(Side side, int row, int col) {
+    public ArrayList<ArrayList<int[]>> getKnightMoves(int side, int row, int col) {
         int[][][] vectors = {{{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}, {2, -1}, {2, 1}}};
         return getVectorMoves(side, row, col, vectors);
     }
 
-    public ArrayList<ArrayList<int[]>> getKingMoves(Side side, int row, int col) {
+    public ArrayList<ArrayList<int[]>> getKingMoves(int side, int row, int col) {
         int[][][] vectors = {{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}};
         return getVectorMoves(side, row, col, vectors);
     }
 
-    public ArrayList<ArrayList<int[]>> getRookMoves(Side side, int row, int col) {
+    public ArrayList<ArrayList<int[]>> getRookMoves(int side, int row, int col) {
         int[][][] vectors =
             {{{1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}},
             {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}},
@@ -95,7 +90,7 @@ public class Moves {
         return getVectorMoves(side, row, col, vectors);
     }
 
-    public ArrayList<ArrayList<int[]>> getBishopMoves(Side side, int row, int col) {
+    public ArrayList<ArrayList<int[]>> getBishopMoves(int side, int row, int col) {
         int[][][] vectors =
             {{{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7}},
             {{-1, 1}, {-2, 2}, {-3, 3}, {-4, 4}, {-5, 5}, {-6, 6}, {-7, 7}},
@@ -104,7 +99,7 @@ public class Moves {
         return getVectorMoves(side, row, col, vectors);
     }
 
-    public ArrayList<ArrayList<int[]>> getQueenMoves(Side side, int row, int col) {
+    public ArrayList<ArrayList<int[]>> getQueenMoves(int side, int row, int col) {
         int[][][] vectors =
             {{{1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}},
             {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}},
@@ -117,7 +112,8 @@ public class Moves {
         return getVectorMoves(side, row, col, vectors);
     }
 
-    private ArrayList<ArrayList<int[]>> getVectorMoves(Side side, int row, int col, int[][][] vectors) {
+    private ArrayList<ArrayList<int[]>> getVectorMoves(int side, int row, int col, int[][][] vectors) {
+        ArrayList<int[]> startCoordinates = new ArrayList<>(Arrays.asList(new int[]{row, col}));
         ArrayList<int[]> moves = new ArrayList<>();
         ArrayList<int[]> attacked = new ArrayList<>();
         ArrayList<int[]> defended = new ArrayList<>();
@@ -141,27 +137,26 @@ public class Moves {
                 }
             }
         }
-        return new ArrayList<>(Arrays.asList(moves, attacked, defended));
+        return new ArrayList<>(Arrays.asList(startCoordinates, moves, attacked, defended));
     }
 
-    public ArrayList<ArrayList<int[]>> getPawnMoves(Side side, int row, int col) {
+    public ArrayList<ArrayList<int[]>> getPawnMoves(int side, int row, int col) {
         int[][][] takingVectors = {{{1, 1}, {1, -1}}};
-        int multiplier = getPawnSideMultiplier(side);
         ArrayList<int[]> moves = new ArrayList<>();
-        if (board.getPiece(row + multiplier, col) == '.') {
-            moves.add(new int[]{row + multiplier, col});
-            if (board.getPiece(row + multiplier * 2, col) == '.' && (side == Side.WHITE && row == 1 || side == Side.BLACK && row == 6)) {
-                moves.add(new int[]{row + multiplier * 2, col});
+        if (board.getPiece(row + side, col) == '.') {
+            moves.add(new int[]{row + side, col});
+            if (board.getPiece(row + side * 2, col) == '.' && (side == 1 && row == 1 || side == -1 && row == 6)) {
+                moves.add(new int[]{row + side * 2, col});
             }
         }
         ArrayList<ArrayList<int[]>> takingVectorMoves = getVectorMoves(side, row, col, takingVectors);
-        takingVectorMoves.set(0, moves);
+        takingVectorMoves.set(1, moves);
         return takingVectorMoves;
     }
 
-    public ArrayList<int[][]> getPromotionMoves(Side side, int col) {
+    public ArrayList<int[][]> getPromotionMoves(int side, int col) {
         ArrayList<int[][]> moves = new ArrayList<>();
-        if (side == Side.WHITE) {
+        if (side == 1) {
             if (board.getPiece(7, col) == '.') {
                 for (char option : board.getWhiteQueeningPieces()) {
                     moves.add(
@@ -181,9 +176,9 @@ public class Moves {
         return moves;
     }
 
-    public ArrayList<int[][]> getCastlingMoves(Side side) {
+    public ArrayList<int[][]> getCastlingMoves(int side) {
         ArrayList<int[][]> moves = new ArrayList<>();
-        if (side == Side.WHITE) {
+        if (side == 1) {
             if (
                     board.getWhiteQueenSideCastling() &&
                     board.getPiece(0, 1) == '.' &&
@@ -231,12 +226,12 @@ public class Moves {
         return moves;
     }
 
-    public ArrayList<int[][]> getEnPassantMoves(Side side) {
+    public ArrayList<int[][]> getEnPassantMoves(int side) {
         ArrayList<int[][]> moves = new ArrayList<>();
         if (board.getEnPassantRow() != 0) {
             int r = board.getEnPassantRow();
             int c = board.getEnPassantCol();
-            if (side == Side.WHITE) {
+            if (side == 1) {
                 if (isOnBoard(r - 1, c - 1) && board.getPiece(r - 1, c - 1) == 'P') {
                     moves.add(
                         new int[][]{{'P', r, c}, {'.', r - 1, c - 1}, {'.', r - 1, c}}
@@ -263,10 +258,4 @@ public class Moves {
         return moves;
     }
 
-    private int getPawnSideMultiplier(Side side) {
-        if (side == Side.WHITE) {
-            return 1;
-        }
-        return -1;
-    }
 }

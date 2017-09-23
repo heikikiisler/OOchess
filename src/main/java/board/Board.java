@@ -1,10 +1,9 @@
 package board;
 
-import side.Side;
-
 // Main place for ideas and comments
 // TODO: 19.09.2017 3 move draw rule (move history?)
 // TODO: 19.09.2017 LATER: Game / Running / Playing class
+// TODO: 23.09.2017 LATER: Save PGN for every game
 // TODO: 19.09.2017 LATER: Engine input compatible with international standards
 public class Board {
 
@@ -33,8 +32,7 @@ public class Board {
     private boolean whiteInCheckMate = false;
     private boolean blackInCheckMate = false;
 
-    private Side sideToMove;
-    private Side result;
+    private int sideToMove;
 
 
     public Board() {
@@ -131,25 +129,25 @@ public class Board {
         pieces[row * 8 + col] = piece;
     }
 
-    public Side getPieceSide(char piece) {
+    public int getPieceSide(char piece) {
         if (piece == '.') {
-            return Side.NEUTRAL;
+            return 0;
         } else {
             for (char c: whitePieces) {
                 if (piece == c) {
-                    return Side.WHITE;
+                    return 1;
                 }
             }
         }
-        return Side.BLACK;
+        return -1;
     }
 
-    public boolean pieceIsSide(char piece, Side side) {
+    public boolean pieceIsSide(char piece, int side) {
         return getPieceSide(piece) == side;
     }
 
     private void setUpBoard() {
-        sideToMove = Side.WHITE;
+        sideToMove = 1;
         pieces = new char[64];
         for (int i = 0; i < 64; i++) {
             pieces[i] = '.';
@@ -207,5 +205,9 @@ public class Board {
 
     public char[] getBlackQueeningPieces() {
         return blackQueeningPieces;
+    }
+
+    public char[] getPieces() {
+        return pieces;
     }
 }
