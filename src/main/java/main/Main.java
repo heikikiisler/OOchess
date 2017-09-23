@@ -2,6 +2,7 @@ package main;
 
 import board.Board;
 import evaluation.Evaluation;
+import game.Game;
 import moves.Moves;
 import util.Conf;
 
@@ -12,6 +13,7 @@ public class Main {
         Board board = new Board();
         Moves moves = new Moves(board);
         Evaluation eval = new Evaluation(moves);
+        Game game = new Game(eval);
         board.printBoard();
 
 //        board.move(6, 1, 4, 1);
@@ -30,7 +32,10 @@ public class Main {
 //            System.out.println(String.format("%c: %d", piece, Conf.getPieceValue(piece)));
 //        }
 
-        System.out.println(Arrays.deepToString(eval.getBestMove(1)));
+        for (int i = 0; i < 40; i++) {
+            game.moveBestMove(1);
+            game.moveBestMove(-1);
+        }
 
     }
 }

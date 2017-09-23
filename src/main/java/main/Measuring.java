@@ -10,22 +10,25 @@ import java.time.Instant;
 public class Measuring {
 
     public static void main(String[] args) {
-        Moves moves = new Moves(new Board());
-        moves.board.printBoard();
+        Board board = new Board();
+        Moves moves = new Moves(board);
+        board.printBoard();
         Evaluation evaluation = new Evaluation(moves);
 
+        int[][] move = new int[][]{{1, 4}, {2, 4}};
+
         //          123456789
-        int loops = 10000000;
+        int loops = 1000000000;
         //          1000000 - million
         for (int j = 0; j < 3; j++) {
             Instant start = Instant.now();
             for (int i = 0; i < loops; i++) {
-//                evaluation.getBoardMaterialValue();
+//                board.move(move);
             }
             Instant end = Instant.now();
             Instant start3 = Instant.now();
             for (int i = 0; i < loops; i++) {
-//                evaluation.getBoardMaterialValue();
+                board.move(1, 4, 2, 4);
             }
             Instant end3 = Instant.now();
             System.out.println(Duration.between(start, end));

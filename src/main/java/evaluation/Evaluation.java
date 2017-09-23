@@ -13,13 +13,12 @@ import java.util.ArrayList;
 //      * Attacked pieces
 //      * Defended pieces
 //      * Number of available moves
-//      *
 // TODO: 20.09.2017 LATER: All-inclusive search tree with n-depth
 // TODO: 20.09.2017 LATER: Pruning search tree
 // TODO: 20.09.2017 MUCH LATER: Trying to optimize parameters with ML
 public class Evaluation {
 
-    private Moves moves;
+    public Moves moves;
     private Board board;
     private Kryo kryo;
 

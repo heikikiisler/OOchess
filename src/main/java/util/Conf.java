@@ -15,7 +15,6 @@ public class Conf {
         char[] pieces = new char[]{'p', 'r', 'n', 'b', 'q', 'k'};
         HashMap<Character, Integer> values = new HashMap<>();
         for (char piece: pieces) {
-            System.out.println(Character.toUpperCase(piece));
             values.put(Character.toUpperCase(piece), CONFIG.getInt(String.format("values.%c", piece)));
             values.put(piece, -CONFIG.getInt(String.format("values.%c", piece)));
         }

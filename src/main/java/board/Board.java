@@ -50,7 +50,6 @@ public class Board {
         if (Character.toLowerCase(piece) == 'p' && (Math.abs(start_row - end_row) == 2)) {
             enPassantRow = Math.abs((start_row + end_row) / 2);
             enPassantCol = start_col;
-            System.out.println(String.format("en passant: %d, %d", enPassantRow, enPassantCol));
         }
         // Castling rights
         if (piece == 'K') {
@@ -71,7 +70,10 @@ public class Board {
         // Finally move piece
         setPiece(piece, end_row, end_col);
         setPiece('.', start_row, start_col);
-        printBoard();
+    }
+
+    public void move(int[][] move) {
+        move(move[0][0], move[0][1], move[1][0], move[1][1]);
     }
 
     public void specialMove(int[][] coordinateValues) {
@@ -90,7 +92,6 @@ public class Board {
         for (int[] coo: coordinateValues) {
             setPiece((char)(coo[0]), coo[1], coo[2]);
         }
-        printBoard();
     }
 
     private void resetInactivePlies() {
