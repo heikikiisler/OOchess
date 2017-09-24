@@ -2,18 +2,18 @@ package board;
 
 // Main place for ideas and comments
 // TODO: 19.09.2017 3 move draw rule (move history?)
-// TODO: 19.09.2017 LATER: Game / Running / Playing class
+// TODO: 24.09.2017 Universal move structure (probably excluding special moves) 
 // TODO: 23.09.2017 LATER: Save PGN for every game
 // TODO: 19.09.2017 LATER: Engine input compatible with international standards
 public class Board {
 
     private char[] pieces;
 
-    private char[] whitePieces = new char[]{'P', 'R', 'N', 'B', 'Q', 'K'};
-    private char[] blackPieces = new char[]{'p', 'r', 'n', 'b', 'q', 'k'};
+    private static final char[] WHITE_PIECES = new char[]{'P', 'R', 'N', 'B', 'Q', 'K'};
+    private static final char[] BLACK_PIECES = new char[]{'p', 'r', 'n', 'b', 'q', 'k'};
 
-    private char[] whiteQueeningPieces = new char[]{'R', 'N', 'B', 'Q'};
-    private char[] blackQueeningPieces = new char[]{'r', 'n', 'b', 'q'};
+    private static final char[] WHITE_QUEENING_PIECES = new char[]{'R', 'N', 'B', 'Q'};
+    private static final char[] BLACK_QUEENING_PIECES = new char[]{'r', 'n', 'b', 'q'};
 
     private boolean whiteKingSideCastling = true;
     private boolean whiteQueenSideCastling = true;
@@ -70,6 +70,39 @@ public class Board {
         // Finally move piece
         setPiece(piece, end_row, end_col);
         setPiece('.', start_row, start_col);
+    }
+
+    public void move(int[] move) {
+        char piece = getPiece(move[0], move[1]);
+        refreshAlways();
+        // Reset 50 move rule counter
+        if (Character.toLowerCase(piece) == 'p' || getPiece(move[2], move[3]) != '.') {
+            resetInactivePlies();
+        }
+        // Set en passant coordinates
+        if (Character.toLowerCase(piece) == 'p' && (Math.abs(move[0] - move[2]) == 2)) {
+            enPassantRow = Math.abs((move[0] + move[2]) / 2);
+            enPassantCol = move[1];
+        }
+        // Castling rights
+        if (piece == 'K') {
+            whiteQueenSideCastling = false;
+            whiteKingSideCastling = false;
+        } else if (piece == 'k') {
+            blackQueenSideCastling = false;
+            blackKingSideCastling = false;
+        } else if (move[0] == 0 && move[1] == 0) {
+            whiteQueenSideCastling = false;
+        } else if (move[0] == 0 && move[1] == 7) {
+            whiteKingSideCastling = false;
+        } else if (move[0] == 7 && move[1] == 0) {
+            blackQueenSideCastling = false;
+        } else if (move[0] == 7 && move[1] == 7) {
+            blackKingSideCastling = false;
+        }
+        // Finally move piece
+        setPiece(piece, move[2], move[3]);
+        setPiece('.', move[0], move[1]);
     }
 
     public void move(int[][] move) {
@@ -134,7 +167,7 @@ public class Board {
         if (piece == '.') {
             return 0;
         } else {
-            for (char c: whitePieces) {
+            for (char c: WHITE_PIECES) {
                 if (piece == c) {
                     return 1;
                 }
@@ -201,11 +234,11 @@ public class Board {
     }
 
     public char[] getWhiteQueeningPieces() {
-        return whiteQueeningPieces;
+        return WHITE_QUEENING_PIECES;
     }
 
     public char[] getBlackQueeningPieces() {
-        return blackQueeningPieces;
+        return BLACK_QUEENING_PIECES;
     }
 
     public char[] getPieces() {

@@ -4,6 +4,9 @@ sourceCompatibility = 1.8
 
 repositories {
     jcenter()
+    maven {
+        url 'http://maven.fluxchess.com/release'
+    }
 }
 
 dependencies {
