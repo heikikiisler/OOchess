@@ -6,6 +6,7 @@ import moves.Moves;
 import util.Conf;
 
 import java.util.ArrayList;
+import java.util.TreeMap;
 
 // TODO: 20.09.2017 Evaluate piece position
 // TODO: 20.09.2017 Evaluate board position
@@ -20,12 +21,11 @@ public class Evaluation {
 
     public Moves moves;
     private Board board;
-    private Kryo kryo;
+    private static final Kryo KRYO = new Kryo();
 
     public Evaluation(Moves moves) {
         this.moves = moves;
         this.board = moves.board;
-        this.kryo = new Kryo();
     }
 
     public int getBoardMaterialValue(Board board) {
@@ -40,40 +40,34 @@ public class Evaluation {
     }
 
     public double getMovesValue(Board board, int side) {
-        ArrayList<ArrayList<ArrayList<int[]>>> allMoves = moves.getAllAvailableMoves(side);
-        ArrayList<ArrayList<int[]>> moves = allMoves.get(0);
-        ArrayList<ArrayList<int[]>> attacked = allMoves.get(1);
-        ArrayList<ArrayList<int[]>> defended = allMoves.get(2);
-        // TODO: 23.09.2017 Actual evaluation
-        return moves.size() * 0.1 + + attacked.size() * 0.3 + defended.size() * 0.2;
+//        ArrayList<ArrayList<ArrayList<int[]>>> allMoves = moves.getAllAvailableMoves(side);
+//        ArrayList<ArrayList<int[]>> moves = allMoves.get(0);
+//        ArrayList<ArrayList<int[]>> attacked = allMoves.get(1);
+//        ArrayList<ArrayList<int[]>> defended = allMoves.get(2);
+//        // TODO: 23.09.2017 Actual evaluation
+//        return moves.size() * 0.1 + + attacked.size() * 0.3 + defended.size() * 0.2;
+        return 0.0;
     }
 
     public double getBoardTotalValue(Board board) {
         return getBoardMaterialValue(board) + getMovesValue(board, 1) - getMovesValue(board, -1);
     }
 
-    public int[][] getBestMove(int side) {
-        ArrayList<ArrayList<ArrayList<int[]>>> allMoves = moves.getAllAvailableMoves(side);
-        double highestValue = -100;
-        int[][] bestMove = new int[0][];
-        for (ArrayList<ArrayList<int[]>> pieceMoves: allMoves) {
-            int[] start = pieceMoves.get(0).get(0);
-            ArrayList<int[]> movableMoves = new ArrayList<int[]>(){{addAll(pieceMoves.get(1)); addAll(pieceMoves.get(2));}};
-            for (int[] move: movableMoves) {
-                double tryMoveValue = getTryMoveValue(start, move);
-                if (tryMoveValue * side > highestValue) {
-                    highestValue = tryMoveValue * side;
-                    bestMove = new int[][]{start, move};
-                }
-            }
+    public TreeMap<Double, int[]> getSortedMoves(int side) {
+        TreeMap<Double, int[]> sortedMoves = new TreeMap<>();
+        ArrayList<int[]> possibleMoves = new ArrayList<>();
+        possibleMoves.addAll(moves.getMoves());
+        possibleMoves.addAll(moves.getAttacked());
+        for (int[] move: possibleMoves) {
+            sortedMoves.put(getTryMoveValue(move), move);
         }
-        return bestMove;
+        return sortedMoves;
     }
 
-    public double getTryMoveValue(int[] start, int[] end) {
-        Board board = kryo.copy(this.board);
-        board.move(start[0], start[1], end[0], end[1]);
-        return getBoardTotalValue(board);
+    public double getTryMoveValue(int[] move) {
+        Board copiedBoard = KRYO.copy(this.board);
+        copiedBoard.move(move[0], move[1], move[2], move[3]);
+        return getBoardTotalValue(copiedBoard);
     }
 
 

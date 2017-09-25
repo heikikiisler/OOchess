@@ -19,10 +19,10 @@ public class Game {
     }
 
     public void moveBestMove(int side) {
-        int[][] bestMove = evaluation.getBestMove(side);
-        System.out.println(Arrays.deepToString(bestMove));
-        board.move(bestMove);
-        board.printBoard();
+//        int[][] bestMove = evaluation.getSortedMoves(side);
+//        System.out.println(Arrays.deepToString(bestMove));
+//        board.move(bestMove);
+//        board.printBoard();
     }
 
 }
