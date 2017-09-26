@@ -1,6 +1,6 @@
 package board;
 
-import moves.Move;
+import moves.NormalMove;
 
 // Main place for ideas and comments
 // TODO: 19.09.2017 3 move draw rule (move history?)
@@ -28,30 +28,21 @@ public class Board {
     private int enPassantRow;
     private int enPassantCol;
 
-    private boolean whiteInCheck = false;
-    private boolean blackInCheck = false;
-
-    private boolean whiteInCheckMate = false;
-    private boolean blackInCheckMate = false;
-
-    private int sideToMove;
-
-
     public Board() {
         setUpBoard();
     }
 
-    public void move(int start_row, int start_col, int end_row, int end_col) {
-        char piece = getPiece(start_row, start_col);
+    public void move(NormalMove move) {
+        char piece = getPiece(move.getStartRow(), move.getStartCol());
         refreshAlways();
         // Reset 50 move rule counter
-        if (Character.toLowerCase(piece) == 'p' || getPiece(end_row, end_col) != '.') {
+        if (Character.toLowerCase(piece) == 'p' || getPiece(move.getEndRow(), move.getEndCol()) != '.') {
             resetInactivePlies();
         }
         // Set en passant coordinates
-        if (Character.toLowerCase(piece) == 'p' && (Math.abs(start_row - end_row) == 2)) {
-            enPassantRow = Math.abs((start_row + end_row) / 2);
-            enPassantCol = start_col;
+        if (Character.toLowerCase(piece) == 'p' && (Math.abs(move.getStartRow() - move.getEndRow()) == 2)) {
+            enPassantRow = Math.abs((move.getStartRow() + move.getEndRow()) / 2);
+            enPassantCol = move.getStartCol();
         }
         // Castling rights
         if (piece == 'K') {
@@ -60,88 +51,18 @@ public class Board {
         } else if (piece == 'k') {
             blackQueenSideCastling = false;
             blackKingSideCastling = false;
-        } else if (start_row == 0 && start_col == 0) {
+        } else if (move.getStartRow() == 0 && move.getStartCol() == 0) {
             whiteQueenSideCastling = false;
-        } else if (start_row == 0 && start_col == 7) {
+        } else if (move.getStartRow() == 0 && move.getStartCol() == 7) {
             whiteKingSideCastling = false;
-        } else if (start_row == 7 && start_col == 0) {
+        } else if (move.getStartRow() == 7 && move.getStartCol() == 0) {
             blackQueenSideCastling = false;
-        } else if (start_row == 7 && start_col == 7) {
+        } else if (move.getStartRow() == 7 && move.getStartCol() == 7) {
             blackKingSideCastling = false;
         }
         // Finally move piece
-        setPiece(piece, end_row, end_col);
-        setPiece('.', start_row, start_col);
-    }
-
-    public void move(int[] move) {
-        char piece = getPiece(move[0], move[1]);
-        refreshAlways();
-        // Reset 50 move rule counter
-        if (Character.toLowerCase(piece) == 'p' || getPiece(move[2], move[3]) != '.') {
-            resetInactivePlies();
-        }
-        // Set en passant coordinates
-        if (Character.toLowerCase(piece) == 'p' && (Math.abs(move[0] - move[2]) == 2)) {
-            enPassantRow = Math.abs((move[0] + move[2]) / 2);
-            enPassantCol = move[1];
-        }
-        // Castling rights
-        if (piece == 'K') {
-            whiteQueenSideCastling = false;
-            whiteKingSideCastling = false;
-        } else if (piece == 'k') {
-            blackQueenSideCastling = false;
-            blackKingSideCastling = false;
-        } else if (move[0] == 0 && move[1] == 0) {
-            whiteQueenSideCastling = false;
-        } else if (move[0] == 0 && move[1] == 7) {
-            whiteKingSideCastling = false;
-        } else if (move[0] == 7 && move[1] == 0) {
-            blackQueenSideCastling = false;
-        } else if (move[0] == 7 && move[1] == 7) {
-            blackKingSideCastling = false;
-        }
-        // Finally move piece
-        setPiece(piece, move[2], move[3]);
-        setPiece('.', move[0], move[1]);
-    }
-
-    public void move(Move move) {
-        char piece = getPiece(move.getSr(), move.getSc());
-        refreshAlways();
-        // Reset 50 move rule counter
-        if (Character.toLowerCase(piece) == 'p' || getPiece(move.getEr(), move.getEc()) != '.') {
-            resetInactivePlies();
-        }
-        // Set en passant coordinates
-        if (Character.toLowerCase(piece) == 'p' && (Math.abs(move.getSr() - move.getEr()) == 2)) {
-            enPassantRow = Math.abs((move.getSr() + move.getEr()) / 2);
-            enPassantCol = move.getSc();
-        }
-        // Castling rights
-        if (piece == 'K') {
-            whiteQueenSideCastling = false;
-            whiteKingSideCastling = false;
-        } else if (piece == 'k') {
-            blackQueenSideCastling = false;
-            blackKingSideCastling = false;
-        } else if (move.getSr() == 0 && move.getSc() == 0) {
-            whiteQueenSideCastling = false;
-        } else if (move.getSr() == 0 && move.getSc() == 7) {
-            whiteKingSideCastling = false;
-        } else if (move.getSr() == 7 && move.getSc() == 0) {
-            blackQueenSideCastling = false;
-        } else if (move.getSr() == 7 && move.getSc() == 7) {
-            blackKingSideCastling = false;
-        }
-        // Finally move piece
-        setPiece(piece, move.getEr(), move.getEc());
-        setPiece('.', move.getSr(), move.getSc());
-    }
-
-    public void move(int[][] move) {
-        move(move[0][0], move[0][1], move[1][0], move[1][1]);
+        setPiece(piece, move.getEndRow(), move.getEndCol());
+        setPiece('.', move.getStartRow(), move.getStartCol());
     }
 
     public void specialMove(int[][] coordinateValues) {
@@ -198,7 +119,7 @@ public class Board {
         pieces[row * 8 + col] = piece;
     }
 
-    public int getPieceSide(char piece) {
+    public static int getPieceSide(char piece) {
         if (piece == '.') {
             return 0;
         } else {
@@ -211,12 +132,11 @@ public class Board {
         return -1;
     }
 
-    public boolean pieceIsSide(char piece, int side) {
+    public static boolean pieceIsSide(char piece, int side) {
         return getPieceSide(piece) == side;
     }
 
     private void setUpBoard() {
-        sideToMove = 1;
         pieces = new char[64];
         for (int i = 0; i < 64; i++) {
             pieces[i] = '.';

@@ -3,6 +3,8 @@ package moves;
 import board.Board;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
 
 // TODO: 19.09.2017 Filter moves that leave king in check
 // TODO: 20.09.2017 piece attacking and defending functions
@@ -17,17 +19,19 @@ import java.util.ArrayList;
 public class Moves {
 
     public Board board;
-    private ArrayList<int[]> moves;
-    private ArrayList<int[]> attacked;
-    private ArrayList<int[]> defended;
-    private ArrayList<int[][]> specialMoves;
+    private ArrayList<Move> normalMoves;
+    private ArrayList<Move> attackMoves;
+    private ArrayList<DefendMove> defendMoves;
+    private ArrayList<Move> specialMoves;
+    private Set<int[]> attackedSquares;
 
     public Moves(Board board) {
         this.board = board;
-        this.moves = new ArrayList<>();
-        this.attacked = new ArrayList<>();
-        this.defended = new ArrayList<>();
+        this.normalMoves = new ArrayList<>();
+        this.attackMoves = new ArrayList<>();
+        this.defendMoves = new ArrayList<>();
         this.specialMoves = new ArrayList<>();
+        this.attackedSquares = Collections.emptySet();
     }
 
     public void getAvailableMoves(int row, int col) {
@@ -56,7 +60,7 @@ public class Moves {
             case 'q':
                 getQueenMoves(-1, row, col);
             case 'k':
-                getKingMoves(1, row, col);
+                getKingMoves(-1, row, col);
             default: throw new IllegalArgumentException();
         }
     }
@@ -65,11 +69,14 @@ public class Moves {
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
                 char piece = board.getPiece(r, c);
-                if (board.pieceIsSide(piece, side)) {
+                if (Board.pieceIsSide(piece, side)) {
                     getAvailableMoves(r, c);
                 }
             }
         }
+        getEnPassantMoves(side);
+        getCastlingMoves(side);
+        getPromotionMoves(side);
     }
 
     private boolean isOnBoard(int row, int col) {
@@ -125,12 +132,12 @@ public class Moves {
                 if (isOnBoard(r, c)) {
                     char targetPiece = board.getPiece(r, c);
                     if (targetPiece == '.') {
-                        moves.add(new int[]{row, col, r, c});
-                    } else if (board.getPieceSide(targetPiece) != side) {
-                        attacked.add(new int[]{row, col, r, c, targetPiece});
+                        normalMoves.add(new NormalMove(row, col, r, c));
+                    } else if (Board.getPieceSide(targetPiece) != side) {
+                        attackMoves.add(new AttackMove(row, col, r, c, targetPiece));
                         break;
                     } else {
-                        defended.add(new int[]{row, col, r, c, targetPiece});
+                        defendMoves.add(new DefendMove(row, col, r, c, targetPiece));
                         break;
                     }
                 } else {
@@ -143,29 +150,31 @@ public class Moves {
     public void getPawnMoves(int side, int row, int col) {
         int[][][] takingVectors = {{{1, 1}, {1, -1}}};
         if (board.getPiece(row + side, col) == '.') {
-            moves.add(new int[]{row, col, row + side, col});
+            normalMoves.add(new NormalMove(row, col, row + side, col));
             if (board.getPiece(row + side * 2, col) == '.' && (side == 1 && row == 1 || side == -1 && row == 6)) {
-                moves.add(new int[]{row, col, row + side * 2, col});
+                normalMoves.add(new NormalMove(row, col, row + side * 2, col));
             }
         }
         getVectorMoves(side, row, col, takingVectors);
     }
 
-    public void getPromotionMoves(int side, int col) {
-        if (side == 1) {
-            if (board.getPiece(7, col) == '.') {
-                for (char option : board.getWhiteQueeningPieces()) {
-                    specialMoves.add(
-                        new int[][]{{'.', 7, col}, {option, 8, col}}
-                    );
+    public void getPromotionMoves(int side) {
+        for (int col = 0; col < 8; col++) {
+            if (side == 1) {
+                if (board.getPiece(6, col) == 'P' && board.getPiece(7, col) == '.') {
+                    for (char option : board.getWhiteQueeningPieces()) {
+                        specialMoves.add(
+                                new SpecialMove(new int[][]{{'.', 6, col}, {option, 7, col}})
+                        );
+                    }
                 }
-            }
-        } else {
-            if (board.getPiece(0, col) == '.') {
-                for (char option : board.getBlackQueeningPieces()) {
-                    specialMoves.add(
-                        new int[][]{{'.', 1, col}, {option, 0, col}}
-                    );
+            } else {
+                if (board.getPiece(1, col) == 'p' && board.getPiece(0, col) == '.') {
+                    for (char option : board.getBlackQueeningPieces()) {
+                        specialMoves.add(
+                                new SpecialMove(new int[][]{{'.', 1, col}, {option, 0, col}})
+                        );
+                    }
                 }
             }
         }
@@ -181,7 +190,7 @@ public class Moves {
                     // TODO: 20.09.2017 Add castling square check checking (check against list of attacked squares?)
                 ) {
                 specialMoves.add(
-                    new int[][]{{'.', 0, 0}, {'K', 0, 2}, {'R', 0, 3}, {'.', 0, 4}}
+                        new SpecialMove(new int[][]{{'.', 0, 0}, {'K', 0, 2}, {'R', 0, 3}, {'.', 0, 4}})
                 );
             }
             if (
@@ -191,7 +200,7 @@ public class Moves {
                     // TODO: 20.09.2017 Add castling square check checking (check against list of attacked squares?)
                 ) {
                 specialMoves.add(
-                    new int[][]{{'.', 0, 4}, {'K', 0, 6}, {'R', 0, 5}, {'.', 0, 7}}
+                        new SpecialMove(new int[][]{{'.', 0, 4}, {'K', 0, 6}, {'R', 0, 5}, {'.', 0, 7}})
                 );
             }
         } else {
@@ -203,7 +212,7 @@ public class Moves {
                     // TODO: 20.09.2017 Add castling square check checking (check against list of attacked squares?)
                 ) {
                 specialMoves.add(
-                    new int[][]{{'.', 7, 0}, {'k', 7, 2}, {'r', 7, 3}, {'.', 7, 4}}
+                        new SpecialMove(new int[][]{{'.', 7, 0}, {'k', 7, 2}, {'r', 7, 3}, {'.', 7, 4}})
                 );
             }
             if (
@@ -213,7 +222,7 @@ public class Moves {
                     // TODO: 20.09.2017 Add castling square check checking (check against list of attacked squares?)
                 ) {
                 specialMoves.add(
-                    new int[][]{{'.', 7, 4}, {'k', 7, 6}, {'r', 7, 5}, {'.', 7, 7}}
+                        new SpecialMove(new int[][]{{'.', 7, 4}, {'k', 7, 6}, {'r', 7, 5}, {'.', 7, 7}})
                 );
             }
         }
@@ -226,42 +235,46 @@ public class Moves {
             if (side == 1) {
                 if (isOnBoard(r - 1, c - 1) && board.getPiece(r - 1, c - 1) == 'P') {
                     specialMoves.add(
-                        new int[][]{{'P', r, c}, {'.', r - 1, c - 1}, {'.', r - 1, c}}
+                            new SpecialMove(new int[][]{{'P', r, c}, {'.', r - 1, c - 1}, {'.', r - 1, c}})
                     );
                 }
                 if (isOnBoard(r - 1, c + 1) && board.getPiece(r - 1, c + 1) == 'P') {
                     specialMoves.add(
-                        new int[][]{{'P', r, c}, {'.', r - 1, c + 1}, {'.', r - 1, c}}
+                            new SpecialMove(new int[][]{{'P', r, c}, {'.', r - 1, c + 1}, {'.', r - 1, c}})
                     );
                 }
             } else {
                 if (isOnBoard(r + 1, c - 1) && board.getPiece(r + 1, c - 1) == 'p') {
                     specialMoves.add(
-                        new int[][]{{'p', r, c}, {'.', r + 1, c - 1}, {'.', r + 1, c}}
+                            new SpecialMove(new int[][]{{'p', r, c}, {'.', r + 1, c - 1}, {'.', r + 1, c}})
                     );
                 }
                 if (isOnBoard(r - 1, c + 1) && board.getPiece(r + 1, c + 1) == 'p') {
                     specialMoves.add(
-                        new int[][]{{'p', r, c}, {'.', r + 1, c + 1}, {'.', r + 1, c}}
+                            new SpecialMove(new int[][]{{'p', r, c}, {'.', r + 1, c + 1}, {'.', r + 1, c}})
                     );
                 }
             }
         }
     }
 
-    public ArrayList<int[]> getMoves() {
-        return moves;
+    public ArrayList<Move> getNormalMoves() {
+        return normalMoves;
     }
 
-    public ArrayList<int[]> getAttacked() {
-        return attacked;
+    public ArrayList<Move> getAttackMoves() {
+        return attackMoves;
     }
 
-    public ArrayList<int[]> getDefended() {
-        return defended;
+    public ArrayList<DefendMove> getDefendMoves() {
+        return defendMoves;
     }
 
-    public ArrayList<int[][]> getSpecialMoves() {
+    public ArrayList<Move> getSpecialMoves() {
         return specialMoves;
+    }
+
+    public Set<int[]> getAttackedSquares() {
+        return attackedSquares;
     }
 }

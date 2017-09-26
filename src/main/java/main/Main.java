@@ -15,6 +15,7 @@ public class Main {
         Evaluation eval = new Evaluation(moves);
         Game game = new Game(eval);
         board.printBoard();
+        Conf.getPieceValue('r');
 
 //        board.move(6, 1, 4, 1);
 //        board.move(4, 1, 3, 1);

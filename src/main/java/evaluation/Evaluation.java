@@ -2,6 +2,8 @@ package evaluation;
 
 import board.Board;
 import com.esotericsoftware.kryo.Kryo;
+import moves.Move;
+import moves.NormalMove;
 import moves.Moves;
 import util.Conf;
 
@@ -53,25 +55,22 @@ public class Evaluation {
         return getBoardMaterialValue(board) + getMovesValue(board, 1) - getMovesValue(board, -1);
     }
 
-    public TreeMap<Double, int[]> getSortedMoves(int side) {
-        TreeMap<Double, int[]> sortedMoves = new TreeMap<>();
-        ArrayList<int[]> possibleMoves = new ArrayList<>();
-        possibleMoves.addAll(moves.getMoves());
-        possibleMoves.addAll(moves.getAttacked());
-        for (int[] move: possibleMoves) {
+    public TreeMap<Double, Move> getSortedMoves(int side) {
+        TreeMap<Double, Move> sortedMoves = new TreeMap<>();
+        ArrayList<Move> possibleMoves = new ArrayList<>();
+        possibleMoves.addAll(moves.getNormalMoves());
+        possibleMoves.addAll(moves.getAttackMoves());
+        possibleMoves.addAll(moves.getSpecialMoves());
+        for (Move move: possibleMoves) {
             sortedMoves.put(getTryMoveValue(move), move);
         }
         return sortedMoves;
     }
 
-    public double getTryMoveValue(int[] move) {
+    public double getTryMoveValue(Move move) {
         Board copiedBoard = KRYO.copy(this.board);
-        copiedBoard.move(move[0], move[1], move[2], move[3]);
+        move.move(copiedBoard);
         return getBoardTotalValue(copiedBoard);
     }
-
-
-
-
 
 }
