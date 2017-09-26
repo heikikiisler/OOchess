@@ -24,6 +24,10 @@ public class Moves {
 
     public Moves(Board board) {
         this.board = board;
+        this.moves = new ArrayList<>();
+        this.attacked = new ArrayList<>();
+        this.defended = new ArrayList<>();
+        this.specialMoves = new ArrayList<>();
     }
 
     public void getAvailableMoves(int row, int col) {

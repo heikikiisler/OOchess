@@ -2,6 +2,7 @@ package main;
 
 import board.Board;
 import evaluation.Evaluation;
+import moves.Move;
 import moves.Moves;
 
 import java.time.Duration;
@@ -15,19 +16,19 @@ public class Measuring {
         board.printBoard();
         Evaluation evaluation = new Evaluation(moves);
 
-        int[] move = new int[]{1, 4, 2, 4};
-
         //          123456789
         int loops = 500000000;
         //          1000000 - million
         for (int j = 0; j < 3; j++) {
             Instant start = Instant.now();
             for (int i = 0; i < loops; i++) {
-                board.move(move[0], move[1], move[2], move[3]);
+                Move move2 = new Move(1, 4, 2, 4);
+                board.move(move2);
             }
             Instant end = Instant.now();
             Instant start3 = Instant.now();
             for (int i = 0; i < loops; i++) {
+                int[] move = new int[]{1, 4, 2, 4};
                 board.move(move);
             }
             Instant end3 = Instant.now();

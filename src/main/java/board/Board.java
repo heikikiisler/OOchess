@@ -1,5 +1,7 @@
 package board;
 
+import moves.Move;
+
 // Main place for ideas and comments
 // TODO: 19.09.2017 3 move draw rule (move history?)
 // TODO: 24.09.2017 Universal move structure (probably excluding special moves) 
@@ -103,6 +105,39 @@ public class Board {
         // Finally move piece
         setPiece(piece, move[2], move[3]);
         setPiece('.', move[0], move[1]);
+    }
+
+    public void move(Move move) {
+        char piece = getPiece(move.getSr(), move.getSc());
+        refreshAlways();
+        // Reset 50 move rule counter
+        if (Character.toLowerCase(piece) == 'p' || getPiece(move.getEr(), move.getEc()) != '.') {
+            resetInactivePlies();
+        }
+        // Set en passant coordinates
+        if (Character.toLowerCase(piece) == 'p' && (Math.abs(move.getSr() - move.getEr()) == 2)) {
+            enPassantRow = Math.abs((move.getSr() + move.getEr()) / 2);
+            enPassantCol = move.getSc();
+        }
+        // Castling rights
+        if (piece == 'K') {
+            whiteQueenSideCastling = false;
+            whiteKingSideCastling = false;
+        } else if (piece == 'k') {
+            blackQueenSideCastling = false;
+            blackKingSideCastling = false;
+        } else if (move.getSr() == 0 && move.getSc() == 0) {
+            whiteQueenSideCastling = false;
+        } else if (move.getSr() == 0 && move.getSc() == 7) {
+            whiteKingSideCastling = false;
+        } else if (move.getSr() == 7 && move.getSc() == 0) {
+            blackQueenSideCastling = false;
+        } else if (move.getSr() == 7 && move.getSc() == 7) {
+            blackKingSideCastling = false;
+        }
+        // Finally move piece
+        setPiece(piece, move.getEr(), move.getEc());
+        setPiece('.', move.getSr(), move.getSc());
     }
 
     public void move(int[][] move) {
