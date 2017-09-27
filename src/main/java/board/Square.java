@@ -18,6 +18,10 @@ public class Square {
         this.index = row * 8 + col;
     }
 
+    public boolean isOnBoard() {
+        return !(row < 0 || row > 7 || col < 0 || col > 7);
+    }
+
     public int getRow() {
         return row;
     }

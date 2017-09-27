@@ -22,7 +22,7 @@ public class Branch {
     }
 
     private void checkForCheck() {
-        if (move.getType() != MoveType.CASTLING) {
+        if (!(move instanceof CastlingMove)) {
             Set<Square> checkSquares = moves.getAttackedSquares();
             Square kingSquare = board.getKingPosition(board.getSideToMove());
             for (Square square: checkSquares) {

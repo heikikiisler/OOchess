@@ -2,6 +2,7 @@ package board;
 
 import com.esotericsoftware.kryo.Kryo;
 import moves.NormalMove;
+import moves.SetMove;
 
 import java.util.ArrayList;
 
@@ -15,8 +16,8 @@ public class Board {
     private static final char[] WHITE_PIECES = new char[]{'P', 'R', 'N', 'B', 'Q', 'K'};
     private static final char[] BLACK_PIECES = new char[]{'p', 'r', 'n', 'b', 'q', 'k'};
 
-    private static final char[] WHITE_QUEENING_PIECES = new char[]{'R', 'N', 'B', 'Q'};
-    private static final char[] BLACK_QUEENING_PIECES = new char[]{'r', 'n', 'b', 'q'};
+    private static final char[] WHITE_PROMOTION_PIECES = new char[]{'R', 'N', 'B', 'Q'};
+    private static final char[] BLACK_PROMOTION_PIECES = new char[]{'r', 'n', 'b', 'q'};
 
     private boolean whiteKingSideCastling = true;
     private boolean whiteQueenSideCastling = true;
@@ -102,36 +103,22 @@ public class Board {
         setPiece('.', move.getStartRow(), move.getStartCol());
     }
 
-    public void specialMove(int[][] coordinateValues) {
-        // TODO: 27.09.2017 Break up to 3 methods
+    public void specialMove(ArrayList<SetMove> setMoves) {
         refreshAlways();
-        // En passant, promotion
-        if (coordinateValues.length < 4) {
-            resetInactivePlies();
-        // Castling
-        } else {
-            if (coordinateValues[1][0] == 'K') {
-                whiteQueenSideCastling = false;
-                whiteKingSideCastling = false;
-            } else {
-                blackQueenSideCastling = false;
-                blackKingSideCastling = false;
-            }
-        }
-        for (int[] coo: coordinateValues) {
-            setPiece((char)(coo[0]), coo[1], coo[2]);
+        for (SetMove setMove: setMoves) {
+            setMove(setMove);
         }
     }
 
-    public void castlingMove(int side, boolean kingSide) {
+    public void castlingMove(boolean kingSide) {
         // TODO: 27.09.2017 Implement
     }
 
-    public void promotionMove() {
+    public void promotionMove(Square startSquare, Square endSquare, char piece) {
         // TODO: 27.09.2017 Implement
     }
 
-    public void enPassantMove() {
+    public void enPassantMove(Square startSquare) {
         // TODO: 27.09.2017 Implement
     }
 
@@ -167,8 +154,16 @@ public class Board {
         return pieces[row * 8 + col];
     }
 
+    public char getPiece(Square startSquare) {
+        return pieces[startSquare.getIndex()];
+    }
+
     private void setPiece(char piece, int row, int col) {
         pieces[row * 8 + col] = piece;
+    }
+
+    private void setMove(SetMove setMove) {
+        pieces[setMove.getSquare().getIndex()] = setMove.getPiece();
     }
 
     public static int getPieceSide(char piece) {
@@ -226,12 +221,12 @@ public class Board {
         return blackQueenSideCastling;
     }
 
-    public char[] getWhiteQueeningPieces() {
-        return WHITE_QUEENING_PIECES;
+    public static char[] getWhitePromotionPieces() {
+        return WHITE_PROMOTION_PIECES;
     }
 
-    public char[] getBlackQueeningPieces() {
-        return BLACK_QUEENING_PIECES;
+    public static char[] getBlackPromotionPieces() {
+        return BLACK_PROMOTION_PIECES;
     }
 
     public char[] getPieces() {
@@ -244,5 +239,21 @@ public class Board {
 
     public Board getCopy() {
         return KRYO.copy(this);
+    }
+
+    public boolean isCastlingAllowed(boolean kingSide) {
+        if (sideToMove == 1) {
+            if (kingSide) {
+                return whiteKingSideCastling;
+            } else {
+                return whiteQueenSideCastling;
+            }
+        } else {
+            if (kingSide) {
+                return blackKingSideCastling;
+            } else {
+                return blackQueenSideCastling;
+            }
+        }
     }
 }
