@@ -1,35 +1,24 @@
 package moves;
 
 import board.Board;
+import board.Square;
 
 public class NormalMove implements Move {
 
-    private int startRow;
-    private int startCol;
-    private int endRow;
-    private int endCol;
+    private Square startSquare;
+    private Square endSquare;
 
-    public NormalMove(int startRow, int startCol, int endRow, int endCol) {
-        this.startRow = startRow;
-        this.startCol = startCol;
-        this.endRow = endRow;
-        this.endCol = endCol;
+    public NormalMove(Square startSquare, Square endSquare) {
+        this.startSquare = startSquare;
+        this.endSquare = endSquare;
     }
 
-    public int getStartRow() {
-        return startRow;
+    public Square getStartSquare() {
+        return startSquare;
     }
 
-    public int getStartCol() {
-        return startCol;
-    }
-
-    public int getEndRow() {
-        return endRow;
-    }
-
-    public int getEndCol() {
-        return endCol;
+    public Square getEndSquare() {
+        return endSquare;
     }
 
     @Override

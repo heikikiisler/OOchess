@@ -22,8 +22,7 @@ public class Measuring {
         for (int j = 0; j < 3; j++) {
             Instant start = Instant.now();
             for (int i = 0; i < loops; i++) {
-                NormalMove move2 = new NormalMove(1, 4, 2, 4);
-                board.move(move2);
+
             }
             Instant end = Instant.now();
             Instant start3 = Instant.now();

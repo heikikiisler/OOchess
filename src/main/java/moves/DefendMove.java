@@ -1,35 +1,25 @@
 package moves;
 
+import board.Square;
+
 public class DefendMove {
 
-    private int startRow;
-    private int startCol;
-    private int endRow;
-    private int endCol;
+    private Square startSquare;
+    private Square endSquare;
     private char endPiece;
 
-    public DefendMove(int startRow, int startCol, int endRow, int endCol, char endPiece) {
-        this.startRow = startRow;
-        this.startCol = startCol;
-        this.endRow = endRow;
-        this.endCol = endCol;
+    public DefendMove(Square startSquare, Square endSquare, char endPiece) {
+        this.startSquare = startSquare;
+        this.endSquare = endSquare;
         this.endPiece = endPiece;
     }
 
-    public int getStartRow() {
-        return startRow;
+    public Square getStartSquare() {
+        return startSquare;
     }
 
-    public int getStartCol() {
-        return startCol;
-    }
-
-    public int getEndRow() {
-        return endRow;
-    }
-
-    public int getEndCol() {
-        return endCol;
+    public Square getEndSquare() {
+        return endSquare;
     }
 
     public char getEndPiece() {

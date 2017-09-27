@@ -29,8 +29,7 @@ public class Board {
     private int totalPlies;
     private int currentInactivePlies;
 
-    private int enPassantRow;
-    private int enPassantCol;
+    private Square enPassantSquare;
 
     private ArrayList<Square> disallowedCheckSquares;
 
@@ -71,36 +70,27 @@ public class Board {
     }
 
     public void move(NormalMove move) {
-        char piece = getPiece(move.getStartRow(), move.getStartCol());
+        char piece = getPiece(move.getStartSquare());
         refreshAlways();
-        // Reset 50 move rule counter
-        if (Character.toLowerCase(piece) == 'p' || getPiece(move.getEndRow(), move.getEndCol()) != '.') {
-            resetInactivePlies();
-        }
-        // Set en passant coordinates
-        if (Character.toLowerCase(piece) == 'p' && (Math.abs(move.getStartRow() - move.getEndRow()) == 2)) {
-            enPassantRow = Math.abs((move.getStartRow() + move.getEndRow()) / 2);
-            enPassantCol = move.getStartCol();
-        }
         // Castling rights
-        if (piece == 'K') {
-            whiteQueenSideCastling = false;
-            whiteKingSideCastling = false;
-        } else if (piece == 'k') {
-            blackQueenSideCastling = false;
-            blackKingSideCastling = false;
-        } else if (move.getStartRow() == 0 && move.getStartCol() == 0) {
-            whiteQueenSideCastling = false;
-        } else if (move.getStartRow() == 0 && move.getStartCol() == 7) {
-            whiteKingSideCastling = false;
-        } else if (move.getStartRow() == 7 && move.getStartCol() == 0) {
-            blackQueenSideCastling = false;
-        } else if (move.getStartRow() == 7 && move.getStartCol() == 7) {
-            blackKingSideCastling = false;
-        }
+//        if (piece == 'K') {
+//            whiteQueenSideCastling = false;
+//            whiteKingSideCastling = false;
+//        } else if (piece == 'k') {
+//            blackQueenSideCastling = false;
+//            blackKingSideCastling = false;
+//        } else if (move.getStartRow() == 0 && move.getStartCol() == 0) {
+//            whiteQueenSideCastling = false;
+//        } else if (move.getStartRow() == 0 && move.getStartCol() == 7) {
+//            whiteKingSideCastling = false;
+//        } else if (move.getStartRow() == 7 && move.getStartCol() == 0) {
+//            blackQueenSideCastling = false;
+//        } else if (move.getStartRow() == 7 && move.getStartCol() == 7) {
+//            blackKingSideCastling = false;
+//        }
         // Finally move piece
-        setPiece(piece, move.getEndRow(), move.getEndCol());
-        setPiece('.', move.getStartRow(), move.getStartCol());
+        setPiece(piece, move.getEndSquare());
+        setPiece('.', move.getStartSquare());
     }
 
     public void specialMove(ArrayList<SetMove> setMoves) {
@@ -129,8 +119,7 @@ public class Board {
     private void refreshAlways() {
         totalPlies++;
         currentInactivePlies++;
-        enPassantRow = 0;
-        enPassantCol = 0;
+        enPassantSquare = null;
         sideToMove = -sideToMove;
     }
 
@@ -162,6 +151,10 @@ public class Board {
         pieces[row * 8 + col] = piece;
     }
 
+    private void setPiece(char piece, Square square) {
+        pieces[square.getIndex()] = piece;
+    }
+
     private void setMove(SetMove setMove) {
         pieces[setMove.getSquare().getIndex()] = setMove.getPiece();
     }
@@ -179,6 +172,10 @@ public class Board {
         return -1;
     }
 
+    public int getPieceSide(Square square) {
+        return getPieceSide(getPiece(square));
+    }
+
     public ArrayList<Square> getDisallowedCheckSquares() {
         return disallowedCheckSquares;
     }
@@ -193,24 +190,24 @@ public class Board {
         throw new RuntimeException(String.format("King not found, side: %s", side));
     }
 
+    public boolean isSquareEmpty(Square square) {
+        return getPiece(square) == '.';
+    }
+
     public static boolean pieceIsSide(char piece, int side) {
         return getPieceSide(piece) == side;
     }
 
-    public int getEnPassantRow() {
-        return enPassantRow;
-    }
-
-    public int getEnPassantCol() {
-        return enPassantCol;
+    public Square getEnPassantSquare() {
+        return enPassantSquare;
     }
 
     public boolean getWhiteKingSideCastling() {
-        return whiteKingSideCastling && getPiece(0, 6) == '.' && getPiece(0, 5) == '.';
+        return whiteKingSideCastling;
     }
 
     public boolean getWhiteQueenSideCastling() {
-        return whiteQueenSideCastling && getPiece(0, 1) == '.' && getPiece(0, 2) == '.' && getPiece(0, 3) == '.';
+        return whiteQueenSideCastling;
     }
 
     public boolean getBlackKingSideCastling() {

@@ -2,6 +2,7 @@ package moves;
 
 import board.Board;
 import board.Square;
+import board.Squares;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,84 +32,65 @@ public class Moves {
         getAllAvailableMoves();
     }
 
-    private void getAvailableMoves(int row, int col) {
-        char piece = board.getPiece(row, col);
+    private void getAvailableMoves(Square square) {
+        char piece = Character.toLowerCase(board.getPiece(square));
         switch (piece) {
-            case 'P':
-                getPawnMoves(row, col);
-            case 'N':
-                getKnightMoves(row, col);
-            case 'B':
-                getBishopMoves(row, col);
-            case 'R':
-                getRookMoves(row, col);
-            case 'Q':
-                getQueenMoves(row, col);
-            case 'K':
-                getKingMoves(row, col);
             case 'p':
-                getPawnMoves(row, col);
+                getPawnMoves(square);
             case 'n':
-                getKnightMoves(row, col);
+                getKnightMoves(square);
             case 'b':
-                getBishopMoves(row, col);
+                getBishopMoves(square);
             case 'r':
-                getRookMoves(row, col);
+                getRookMoves(square);
             case 'q':
-                getQueenMoves(row, col);
+                getQueenMoves(square);
             case 'k':
-                getKingMoves(row, col);
+                getKingMoves(square);
             default: throw new IllegalArgumentException();
         }
     }
 
     private void getAllAvailableMoves() {
-        for (int r = 0; r < 8; r++) {
-            for (int c = 0; c < 8; c++) {
-                char piece = board.getPiece(r, c);
-                if (Board.pieceIsSide(piece, side)) {
-                    getAvailableMoves(r, c);
-                }
+        for (Square square: Squares.getAll()) {
+            char piece = board.getPiece(square);
+            if (Board.pieceIsSide(piece, side)) {
+                getAvailableMoves(square);
             }
         }
         getEnPassantMoves();
         getCastlingMoves();
-        getPromotionMoves();
     }
 
-    private boolean isOnBoard(int row, int col) {
-        return !(row < 0 || row > 7 || col < 0 || col > 7);
-    }
-
-    private void getKnightMoves(int row, int col) {
+    private void getKnightMoves(Square square) {
         int[][][] vectors = {{{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}, {2, -1}, {2, 1}}};
-        getVectorMoves(row, col, vectors);
+        getVectorMoves(square, vectors);
     }
 
-    private void getKingMoves(int row, int col) {
+    private void getKingMoves(Square square) {
         int[][][] vectors = {{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}};
-        getVectorMoves(row, col, vectors);
+        getVectorMoves(square, vectors);
     }
 
-    private void getRookMoves(int row, int col) {
+    private void getRookMoves(Square square) {
         int[][][] vectors =
             {{{1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}},
             {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}},
             {{0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6}, {0, -7}},
             {{-1, 0}, {-2, 0}, {-3, 0}, {-4, 0}, {-5, 0}, {-6, 0}, {-7, 0}}};
-        getVectorMoves(row, col, vectors);
+        getVectorMoves(square, vectors);
     }
 
-    private void getBishopMoves(int row, int col) {
+    private void getBishopMoves(Square square) {
         int[][][] vectors =
             {{{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7}},
             {{-1, 1}, {-2, 2}, {-3, 3}, {-4, 4}, {-5, 5}, {-6, 6}, {-7, 7}},
             {{1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {7, -7}},
             {{-1, -1}, {-2, -2}, {-3, -3}, {-4, -4}, {-5, -5}, {-6, -6}, {-7, -7}}};
-        getVectorMoves(row, col, vectors);
+        getVectorMoves(square, vectors);
     }
 
-    private void getQueenMoves(int row, int col) {
+    private void getQueenMoves(Square square) {
         int[][][] vectors =
             {{{1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}},
             {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}},
@@ -118,23 +100,22 @@ public class Moves {
             {{-1, 1}, {-2, 2}, {-3, 3}, {-4, 4}, {-5, 5}, {-6, 6}, {-7, 7}},
             {{1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {7, -7}},
             {{-1, -1}, {-2, -2}, {-3, -3}, {-4, -4}, {-5, -5}, {-6, -6}, {-7, -7}}};
-        getVectorMoves(row, col, vectors);
+        getVectorMoves(square, vectors);
     }
 
-    private void getVectorMoves(int row, int col, int[][][] vectors) {
+    private void getVectorMoves(Square square, int[][][] vectors) {
         for (int[][] subVectors: vectors) {
             for (int[] vector: subVectors) {
-                int r = vector[0] + row;
-                int c = vector[1] + col;
-                if (isOnBoard(r, c)) {
-                    char targetPiece = board.getPiece(r, c);
+                Square endSquare = square.getOffsetSquare(vector[0], vector[1]);
+                if (endSquare.isOnBoard()) {
+                    char targetPiece = board.getPiece(endSquare);
                     if (targetPiece == '.') {
-                        addNormalMove(row, col, r, c);
+                        addNormalMove(square, endSquare);
                     } else if (Board.getPieceSide(targetPiece) != side) {
-                        addAttackMove(row, col, r, c, targetPiece);
+                        addAttackMove(square, endSquare, targetPiece);
                         break;
                     } else {
-                        addDefendMove(row, col, r, c, targetPiece);
+                        addDefendMove(square, endSquare, targetPiece);
                         break;
                     }
                 } else {
@@ -144,59 +125,68 @@ public class Moves {
         }
     }
 
-    // TODO: 27.09.2017 Capturing moves
-    private void getPawnMoves(int row, int col) {
-        if (side == 1 && row == 6) {
-            // TODO: 27.09.2017 Add white promotion moves
-        } else if (side == -1 && row == 1) {
-            // TODO: 27.09.2017 Add black promotion moves
-        // Forward moves
-        } else if (board.getPiece(row + side, col) == '.') {
-            addNormalMove(row, col, row + side, col);
-            if (board.getPiece(row + side * 2, col) == '.' && (side == 1 && row == 1 || side == -1 && row == 6)) {
-                addNormalMove(row, col, row + side * 2, col);
+    private void getPawnMoves(Square square) {
+        boolean isPromoting = side == 1 && square.getRow() == 6 || side == -1 && square.getRow() == 1;
+        Square forwardSquare = square.getOffsetSquare(side, 0);
+        Square[] takingSquares = new Square[2];
+        takingSquares[0] = square.getOffsetSquare(side, -1);
+        takingSquares[1] = square.getOffsetSquare(side, 1);
+        if (board.isSquareEmpty(forwardSquare)) {
+            if (isPromoting) {
+                getPromotionMovesForSquares(square, forwardSquare);
+            } else {
+                addNormalMove(square, forwardSquare);
+                if (side == 1 && square.getRow() == 1 || side == -1 && square.getRow() == 6) {
+                    Square doubleForwardSquare = square.getOffsetSquare(side * 2, 0);
+                    if (board.isSquareEmpty(doubleForwardSquare)) {
+                        specialMoves.add(new PawnDoubleMove(square, doubleForwardSquare));
+                    }
+                }
             }
         }
-
+        for (Square takingSquare: takingSquares) {
+            if (!board.isSquareEmpty(takingSquare)) {
+                if (board.getPieceSide(takingSquare) == -side) {
+                    if (isPromoting) {
+                        getPromotionMovesForSquares(square, takingSquare);
+                    } else {
+                        addAttackMove(square, takingSquare, board.getPiece(takingSquare));
+                    }
+                } else {
+                    addDefendMove(square, takingSquare, board.getPiece(takingSquare));
+                }
+            }
+        }
     }
 
-    private void getPromotionMoves() {
-        // TODO: 27.09.2017 Clean up code
-//        int row = (side == 1) ? 6 : 1;
-//        int pawn = (side == 1) ? 'P' : 'p';
-//        char[] promotionPieces = (side == 1) ? Board.getWhitePromotionPieces() : Board.getBlackPromotionPieces();
-//        for (int col = 0; col < 8; col++) {
-//                if (board.getPiece(row, col) == pawn && board.getPiece(row + side, col) == '.') {
-//                    for (char option : board.getWhiteQueeningPieces()) {
-//                        specialMoves.add(new PromotionMove(new Square(row + side, col)));
-//                    }
-//        }
+    private void getPromotionMovesForSquares(Square startSquare, Square endSquare) {
+        char[] promotionPieces = (side == 1) ? Board.getWhitePromotionPieces() : Board.getBlackPromotionPieces();
+        for (char piece: promotionPieces) {
+            specialMoves.add(new PromotionMove(startSquare, endSquare, piece));
+        }
     }
 
     private void getCastlingMoves() {
         if (side == 1) {
-            getCastlingMove(false, new Square(0, 1), new Square(0, 2), new Square(0, 3));
-            getCastlingMove(true, new Square(0, 5), new Square(0, 6));
+            getCastlingMove(false, Squares.get(0, 1), Squares.get(0, 2), Squares.get(0, 3));
+            getCastlingMove(true, Squares.get(0, 5), Squares.get(0, 6));
         } else {
-            getCastlingMove(false, new Square(7, 1), new Square(7, 2), new Square(7, 3));
-            getCastlingMove(true, new Square(7, 5), new Square(7, 6));
+            getCastlingMove(false, Squares.get(7, 1), Squares.get(7, 2), Squares.get(7, 3));
+            getCastlingMove(true, Squares.get(7, 5), Squares.get(7, 6));
         }
     }
 
     private void getCastlingMove(boolean kingSide, Square... empties) {
-        Predicate<Square> emptyCheck = square -> board.getPiece(square) == '.';
+        Predicate<Square> emptyCheck = square -> board.isSquareEmpty(square);
         if (board.isCastlingAllowed(kingSide) && Arrays.stream(empties).allMatch(emptyCheck)) {
             specialMoves.add(new CastlingMove(kingSide));
         }
     }
 
     private void getEnPassantMoves() {
-        // TODO: 27.09.2017 Clean up code
-        if (board.getEnPassantRow() != 0) {
-            int r = board.getEnPassantRow();
-            int c = board.getEnPassantCol();
-            getEnPassantMove(new Square(r - side, c - 1));
-            getEnPassantMove(new Square(r - side, c + 1));
+        if (board.getEnPassantSquare() != null) {
+            getEnPassantMove(board.getEnPassantSquare().getOffsetSquare(-side, -1));
+            getEnPassantMove(board.getEnPassantSquare().getOffsetSquare(-side, 1));
         }
     }
 
@@ -207,18 +197,18 @@ public class Moves {
         }
     }
 
-    private void addNormalMove(int startRow, int startCol, int endRow, int endCol) {
-        normalMoves.add(new NormalMove(startRow, startCol, endRow, endCol));
-        attackedSquares.add(new Square(endRow, endCol));
+    private void addNormalMove(Square startSquare, Square endSquare) {
+        normalMoves.add(new NormalMove(startSquare, endSquare));
+        attackedSquares.add(endSquare);
     }
 
-    private void addAttackMove(int startRow, int startCol, int endRow, int endCol, char targetPiece) {
-        attackMoves.add(new AttackMove(startRow, startCol, endRow, endCol, targetPiece));
-        attackedSquares.add(new Square(endRow, endCol));
+    private void addAttackMove(Square startSquare, Square endSquare, char targetPiece) {
+        attackMoves.add(new AttackMove(startSquare, endSquare, targetPiece));
+        attackedSquares.add(endSquare);
     }
 
-    private void addDefendMove(int startRow, int startCol, int endRow, int endCol, char targetPiece) {
-        defendMoves.add(new DefendMove(startRow, startCol, endRow, endCol, targetPiece));
+    private void addDefendMove(Square startSquare, Square endSquare, char targetPiece) {
+        defendMoves.add(new DefendMove(startSquare, endSquare, targetPiece));
     }
 
     public ArrayList<Move> getNormalMoves() {

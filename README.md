@@ -20,10 +20,10 @@ evaluator.
 
 ### TODO
 
-* Transfer to multiple special move classes
-* Transfer to Square objects instead of int[]
+* Implement Move classes move() methods with board parameter updating
 * Filter moves that leave king in check
 * 3 move draw rule (move history?)
 * Pruning search tree
+* Unit tests for move methods
+* Benchmarking tests
 * Save PGN for every game
-* Engine input compatible with international standards
