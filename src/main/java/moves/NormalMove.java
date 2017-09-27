@@ -36,4 +36,9 @@ public class NormalMove implements Move {
     public void move(Board board) {
         board.move(this);
     }
+
+    @Override
+    public MoveType getType() {
+        return MoveType.NORMAL;
+    }
 }

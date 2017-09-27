@@ -14,7 +14,7 @@ public class Measuring {
         Board board = new Board();
         Moves moves = new Moves(board);
         board.printBoard();
-        Evaluation evaluation = new Evaluation(moves);
+        Evaluation evaluation = new Evaluation(board);
 
         //          123456789
         int loops = 500000000;

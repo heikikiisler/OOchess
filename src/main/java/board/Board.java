@@ -1,15 +1,16 @@
 package board;
 
+import com.esotericsoftware.kryo.Kryo;
 import moves.NormalMove;
 
-// Main place for ideas and comments
-// TODO: 19.09.2017 3 move draw rule (move history?)
-// TODO: 24.09.2017 Universal move structure (probably excluding special moves) 
-// TODO: 23.09.2017 LATER: Save PGN for every game
-// TODO: 19.09.2017 LATER: Engine input compatible with international standards
+import java.util.ArrayList;
+
+
 public class Board {
 
     private char[] pieces;
+
+    private static final Kryo KRYO = new Kryo();
 
     private static final char[] WHITE_PIECES = new char[]{'P', 'R', 'N', 'B', 'Q', 'K'};
     private static final char[] BLACK_PIECES = new char[]{'p', 'r', 'n', 'b', 'q', 'k'};
@@ -22,14 +23,50 @@ public class Board {
     private boolean blackKingSideCastling = true;
     private boolean blackQueenSideCastling = true;
 
-    private int totalPlies = 0;
-    private int currentInactivePlies = 0;
+    private int sideToMove;
+
+    private int totalPlies;
+    private int currentInactivePlies;
 
     private int enPassantRow;
     private int enPassantCol;
 
+    private ArrayList<Square> disallowedCheckSquares;
+
     public Board() {
         setUpBoard();
+    }
+
+    private void setUpBoard() {
+        disallowedCheckSquares = new ArrayList<>();
+        sideToMove = 1;
+        totalPlies = 0;
+        currentInactivePlies = 0;
+        pieces = new char[64];
+        for (int i = 0; i < 64; i++) {
+            pieces[i] = '.';
+        }
+        for (int i = 0; i < 8; i++) {
+            setPiece('P', 1, i);
+            setPiece('p', 6, i);
+        }
+        setPiece('R', 0, 0);
+        setPiece('R', 0, 7);
+        setPiece('N', 0, 6);
+        setPiece('N', 0, 1);
+        setPiece('B', 0, 2);
+        setPiece('B', 0, 5);
+        setPiece('Q', 0, 3);
+        setPiece('K', 0, 4);
+
+        setPiece('r', 7, 0);
+        setPiece('r', 7, 7);
+        setPiece('n', 7, 6);
+        setPiece('n', 7, 1);
+        setPiece('b', 7, 2);
+        setPiece('b', 7, 5);
+        setPiece('q', 7, 3);
+        setPiece('k', 7, 4);
     }
 
     public void move(NormalMove move) {
@@ -66,9 +103,12 @@ public class Board {
     }
 
     public void specialMove(int[][] coordinateValues) {
+        // TODO: 27.09.2017 Break up to 3 methods
         refreshAlways();
+        // En passant, promotion
         if (coordinateValues.length < 4) {
             resetInactivePlies();
+        // Castling
         } else {
             if (coordinateValues[1][0] == 'K') {
                 whiteQueenSideCastling = false;
@@ -83,16 +123,28 @@ public class Board {
         }
     }
 
+    public void castlingMove(int side, boolean kingSide) {
+        // TODO: 27.09.2017 Implement
+    }
+
+    public void promotionMove() {
+        // TODO: 27.09.2017 Implement
+    }
+
+    public void enPassantMove() {
+        // TODO: 27.09.2017 Implement
+    }
+
     private void resetInactivePlies() {
         currentInactivePlies = 0;
     }
-
 
     private void refreshAlways() {
         totalPlies++;
         currentInactivePlies++;
         enPassantRow = 0;
         enPassantCol = 0;
+        sideToMove = -sideToMove;
     }
 
     public void printBoard() {
@@ -132,36 +184,22 @@ public class Board {
         return -1;
     }
 
-    public static boolean pieceIsSide(char piece, int side) {
-        return getPieceSide(piece) == side;
+    public ArrayList<Square> getDisallowedCheckSquares() {
+        return disallowedCheckSquares;
     }
 
-    private void setUpBoard() {
-        pieces = new char[64];
+    public Square getKingPosition(int side) {
+        char king = (side == 1) ? 'K' : 'k';
         for (int i = 0; i < 64; i++) {
-            pieces[i] = '.';
+            if (pieces[i] == king) {
+                return new Square(i);
+            }
         }
-        for (int i = 0; i < 8; i++) {
-            setPiece('P', 1, i);
-            setPiece('p', 6, i);
-        }
-        setPiece('R', 0, 0);
-        setPiece('R', 0, 7);
-        setPiece('N', 0, 6);
-        setPiece('N', 0, 1);
-        setPiece('B', 0, 2);
-        setPiece('B', 0, 5);
-        setPiece('Q', 0, 3);
-        setPiece('K', 0, 4);
+        throw new RuntimeException(String.format("King not found, side: %s", side));
+    }
 
-        setPiece('r', 7, 0);
-        setPiece('r', 7, 7);
-        setPiece('n', 7, 6);
-        setPiece('n', 7, 1);
-        setPiece('b', 7, 2);
-        setPiece('b', 7, 5);
-        setPiece('q', 7, 3);
-        setPiece('k', 7, 4);
+    public static boolean pieceIsSide(char piece, int side) {
+        return getPieceSide(piece) == side;
     }
 
     public int getEnPassantRow() {
@@ -198,5 +236,13 @@ public class Board {
 
     public char[] getPieces() {
         return pieces;
+    }
+
+    public int getSideToMove() {
+        return sideToMove;
+    }
+
+    public Board getCopy() {
+        return KRYO.copy(this);
     }
 }

@@ -16,3 +16,14 @@ evaluator.
 - [ ] Chess engine UCI protocol game implementation
 - [ ] Machine learning experimenting with config parameters
 - [ ] Beat amateur player
+
+
+### TODO
+
+* Transfer to multiple special move classes
+* Transfer to Square objects instead of int[]
+* Filter moves that leave king in check
+* 3 move draw rule (move history?)
+* Pruning search tree
+* Save PGN for every game
+* Engine input compatible with international standards

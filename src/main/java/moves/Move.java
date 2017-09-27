@@ -6,4 +6,6 @@ public interface Move {
 
     void move(Board board);
 
+
+    MoveType getType();
 }

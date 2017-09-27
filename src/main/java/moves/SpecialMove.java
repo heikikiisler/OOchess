@@ -18,4 +18,9 @@ public class SpecialMove implements Move {
     public void move(Board board) {
         board.specialMove(this.moves);
     }
+
+    @Override
+    public MoveType getType() {
+        return (moves.length == 4) ? MoveType.CASTLING : MoveType.NORMAL;
+    }
 }
