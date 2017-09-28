@@ -4,10 +4,11 @@ Experimenting with machine learning applications on a simple chess engine.
 
 ### Overview
 
-The goal of this project is to write a simple (and probably not very good) chess
-engine. And then trying to improve it with the use of machine learning
-algorithms and help from reputable engines in the role of an opponent or
-evaluator. 
+The aim of this project is to first create a simple (and probably not very
+good) chess engine. The engine will then be experimented on by machine
+learning algortihms and a reputable chess engine in the role of an evaluator
+and/or opponent. This will hopefully have a positive impact on the performance
+of the engine.
 
 ### Goals
 
