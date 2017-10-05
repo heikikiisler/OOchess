@@ -4,10 +4,7 @@ import board.Board;
 import board.Square;
 import board.Squares;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 
@@ -15,10 +12,10 @@ public class Moves {
 
     public Board board;
     private int side;
-    private ArrayList<Move> normalMoves;
-    private ArrayList<Move> attackMoves;
-    private ArrayList<DefendMove> defendMoves;
-    private ArrayList<Move> specialMoves;
+    private List<Move> normalMoves;
+    private List<Move> attackMoves;
+    private List<DefendMove> defendMoves;
+    private List<Move> specialMoves;
     private Set<Square> attackedSquares;
 
     public Moves(Board board) {
@@ -28,7 +25,7 @@ public class Moves {
         this.attackMoves = new ArrayList<>();
         this.defendMoves = new ArrayList<>();
         this.specialMoves = new ArrayList<>();
-        this.attackedSquares = Collections.emptySet();
+        this.attackedSquares = new HashSet<>();
         getAllAvailableMoves();
     }
 
@@ -37,22 +34,31 @@ public class Moves {
         switch (piece) {
             case 'p':
                 getPawnMoves(square);
+                break;
             case 'n':
                 getKnightMoves(square);
+                break;
             case 'b':
                 getBishopMoves(square);
+                break;
             case 'r':
                 getRookMoves(square);
+                break;
             case 'q':
                 getQueenMoves(square);
+                break;
             case 'k':
                 getKingMoves(square);
+                break;
+            case '.':
+                break;
             default: throw new IllegalArgumentException();
         }
     }
 
     private void getAllAvailableMoves() {
-        for (Square square: Squares.getAll()) {
+        Square[] squares = Squares.getAll();
+        for (Square square: squares) {
             char piece = board.getPiece(square);
             if (Board.pieceIsSide(piece, side)) {
                 getAvailableMoves(square);
@@ -106,8 +112,8 @@ public class Moves {
     private void getVectorMoves(Square square, int[][][] vectors) {
         for (int[][] subVectors: vectors) {
             for (int[] vector: subVectors) {
-                Square endSquare = square.getOffsetSquare(vector[0], vector[1]);
-                if (endSquare.isOnBoard()) {
+                if (square.isOffsetOnBoard(vector[0], vector[1])) {
+                    Square endSquare = square.getOffsetSquare(vector[0], vector[1]);
                     char targetPiece = board.getPiece(endSquare);
                     if (targetPiece == '.') {
                         addNormalMove(square, endSquare);
@@ -211,19 +217,19 @@ public class Moves {
         defendMoves.add(new DefendMove(startSquare, endSquare, targetPiece));
     }
 
-    public ArrayList<Move> getNormalMoves() {
+    public List<Move> getNormalMoves() {
         return normalMoves;
     }
 
-    public ArrayList<Move> getAttackMoves() {
+    public List<Move> getAttackMoves() {
         return attackMoves;
     }
 
-    public ArrayList<DefendMove> getDefendMoves() {
+    public List<DefendMove> getDefendMoves() {
         return defendMoves;
     }
 
-    public ArrayList<Move> getSpecialMoves() {
+    public List<Move> getSpecialMoves() {
         return specialMoves;
     }
 
@@ -231,8 +237,8 @@ public class Moves {
         return attackedSquares;
     }
 
-    public ArrayList<Move> getAllPossibleMoves() {
-        ArrayList<Move> allMoves = new ArrayList<>();
+    public List<Move> getAllPossibleMoves() {
+        List<Move> allMoves = new ArrayList<>();
         allMoves.addAll(normalMoves);
         allMoves.addAll(attackMoves);
         allMoves.addAll(specialMoves);

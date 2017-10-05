@@ -2,7 +2,6 @@ package board;
 
 import com.esotericsoftware.kryo.Kryo;
 import moves.NormalMove;
-import moves.SetMove;
 
 import java.util.ArrayList;
 
@@ -72,55 +71,103 @@ public class Board {
     public void move(NormalMove move) {
         char piece = getPiece(move.getStartSquare());
         refreshAlways();
+        if (getPiece(move.getEndSquare()) != '.') {
+            currentInactivePlies++;
+        }
         // Castling rights
-//        if (piece == 'K') {
-//            whiteQueenSideCastling = false;
-//            whiteKingSideCastling = false;
-//        } else if (piece == 'k') {
-//            blackQueenSideCastling = false;
-//            blackKingSideCastling = false;
-//        } else if (move.getStartRow() == 0 && move.getStartCol() == 0) {
-//            whiteQueenSideCastling = false;
-//        } else if (move.getStartRow() == 0 && move.getStartCol() == 7) {
-//            whiteKingSideCastling = false;
-//        } else if (move.getStartRow() == 7 && move.getStartCol() == 0) {
-//            blackQueenSideCastling = false;
-//        } else if (move.getStartRow() == 7 && move.getStartCol() == 7) {
-//            blackKingSideCastling = false;
-//        }
+        if (piece == 'K') {
+            whiteQueenSideCastling = false;
+            whiteKingSideCastling = false;
+        } else if (piece == 'k') {
+            blackQueenSideCastling = false;
+            blackKingSideCastling = false;
+        } else if (move.getStartSquare() == Squares.get(0, 0)) {
+            whiteQueenSideCastling = false;
+        } else if (move.getStartSquare() == Squares.get(0, 7)) {
+            whiteKingSideCastling = false;
+        } else if (move.getStartSquare() == Squares.get(7, 0)) {
+            blackQueenSideCastling = false;
+        } else if (move.getStartSquare() == Squares.get(7, 7)) {
+            blackKingSideCastling = false;
+        }
         // Finally move piece
         setPiece(piece, move.getEndSquare());
         setPiece('.', move.getStartSquare());
     }
 
-    public void specialMove(ArrayList<SetMove> setMoves) {
+    public void castlingMove(boolean kingSide) {
         refreshAlways();
-        for (SetMove setMove: setMoves) {
-            setMove(setMove);
+        currentInactivePlies++;
+        if (sideToMove == 1) {
+            if (kingSide) {
+                setPiece('.', Squares.get(0, 4));
+                setPiece('R', Squares.get(0, 5));
+                setPiece('K', Squares.get(0, 6));
+                setPiece('.', Squares.get(0, 7));
+                disallowedCheckSquares.add(Squares.get(0, 4));
+                disallowedCheckSquares.add(Squares.get(0, 5));
+            } else {
+                setPiece('.', Squares.get(0, 0));
+                setPiece('K', Squares.get(0, 2));
+                setPiece('R', Squares.get(0, 3));
+                setPiece('.', Squares.get(0, 4));
+                disallowedCheckSquares.add(Squares.get(0, 1));
+                disallowedCheckSquares.add(Squares.get(0, 3));
+                disallowedCheckSquares.add(Squares.get(0, 4));
+            }
+            whiteKingSideCastling = false;
+            whiteQueenSideCastling = false;
+        } else {
+            if (kingSide) {
+                setPiece('.', Squares.get(7, 4));
+                setPiece('r', Squares.get(7, 5));
+                setPiece('k', Squares.get(7, 6));
+                setPiece('.', Squares.get(7, 7));
+                disallowedCheckSquares.add(Squares.get(7, 4));
+                disallowedCheckSquares.add(Squares.get(7, 5));
+
+            } else {
+                setPiece('.', Squares.get(7, 0));
+                setPiece('k', Squares.get(7, 2));
+                setPiece('r', Squares.get(7, 3));
+                setPiece('.', Squares.get(7, 4));
+                disallowedCheckSquares.add(Squares.get(7, 1));
+                disallowedCheckSquares.add(Squares.get(7, 3));
+                disallowedCheckSquares.add(Squares.get(7, 4));
+            }
+            blackKingSideCastling = false;
+            blackQueenSideCastling = false;
         }
     }
 
-    public void castlingMove(boolean kingSide) {
-        // TODO: 27.09.2017 Implement
-    }
-
     public void promotionMove(Square startSquare, Square endSquare, char piece) {
-        // TODO: 27.09.2017 Implement
+        setPiece(piece, endSquare);
+        setPiece('.', startSquare);
+        enPassantSquare = null;
+        currentInactivePlies = 0;
     }
 
     public void enPassantMove(Square startSquare) {
-        // TODO: 27.09.2017 Implement
+        setPiece(getPiece(enPassantSquare), startSquare);
+        setPiece('.', enPassantSquare);
+        setPiece('.', enPassantSquare.getOffsetSquare(-sideToMove, 0));
+        refreshAlways();
+        currentInactivePlies = 0;
     }
 
-    private void resetInactivePlies() {
+    public void pawnDoubleMove(Square startSquare, Square endSquare) {
+        move(new NormalMove(startSquare, endSquare));
         currentInactivePlies = 0;
+        refreshAlways();
+        enPassantSquare = startSquare.getOffsetSquare(sideToMove, 0);
     }
 
     private void refreshAlways() {
         totalPlies++;
-        currentInactivePlies++;
-        enPassantSquare = null;
+        disallowedCheckSquares.clear();
+        disallowedCheckSquares.add(getKingPosition(sideToMove));
         sideToMove = -sideToMove;
+        enPassantSquare = null;
     }
 
     public void printBoard() {
@@ -143,8 +190,8 @@ public class Board {
         return pieces[row * 8 + col];
     }
 
-    public char getPiece(Square startSquare) {
-        return pieces[startSquare.getIndex()];
+    public char getPiece(Square square) {
+        return pieces[square.getIndex()];
     }
 
     private void setPiece(char piece, int row, int col) {
@@ -153,10 +200,6 @@ public class Board {
 
     private void setPiece(char piece, Square square) {
         pieces[square.getIndex()] = piece;
-    }
-
-    private void setMove(SetMove setMove) {
-        pieces[setMove.getSquare().getIndex()] = setMove.getPiece();
     }
 
     public static int getPieceSide(char piece) {
@@ -187,7 +230,7 @@ public class Board {
                 return new Square(i);
             }
         }
-        throw new RuntimeException(String.format("King not found, side: %s", side));
+        throw new IllegalStateException(String.format("King not found, side: %s", side));
     }
 
     public boolean isSquareEmpty(Square square) {
@@ -200,22 +243,6 @@ public class Board {
 
     public Square getEnPassantSquare() {
         return enPassantSquare;
-    }
-
-    public boolean getWhiteKingSideCastling() {
-        return whiteKingSideCastling;
-    }
-
-    public boolean getWhiteQueenSideCastling() {
-        return whiteQueenSideCastling;
-    }
-
-    public boolean getBlackKingSideCastling() {
-        return blackKingSideCastling;
-    }
-
-    public boolean getBlackQueenSideCastling() {
-        return blackQueenSideCastling;
     }
 
     public static char[] getWhitePromotionPieces() {

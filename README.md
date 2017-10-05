@@ -6,7 +6,7 @@ Experimenting with machine learning applications on a simple chess engine.
 
 The aim of this project is to first create a simple (and probably not very
 good) chess engine. The engine will then be experimented on by machine
-learning algortihms and a reputable chess engine in the role of an evaluator
+learning algorithms and a reputable chess engine in the role of an evaluator
 and/or opponent. This will hopefully have a positive impact on the performance
 of the engine.
 

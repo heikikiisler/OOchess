@@ -38,4 +38,10 @@ public class Square {
         return Squares.get(row + rowOffset, col + colOffset);
     }
 
+    public boolean isOffsetOnBoard(int rowOffset, int colOffset) {
+        int r = row + rowOffset;
+        int c = col + colOffset;
+        return r >= 0 && r <= 7 && c >=0 && c <= 7;
+    }
+
 }

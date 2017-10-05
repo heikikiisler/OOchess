@@ -9,7 +9,7 @@ public class Squares {
     }
 
     public static Square get(int row, int col) {
-        return get(row * 8, col);
+        return get(row * 8 + col);
     }
 
     public static Square[] getAll() {

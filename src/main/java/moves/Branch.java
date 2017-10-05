@@ -4,6 +4,7 @@ import board.Board;
 import board.Square;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class Branch {
@@ -22,25 +23,26 @@ public class Branch {
     }
 
     private void checkForCheck() {
-        if (!(move instanceof CastlingMove)) {
-            Set<Square> checkSquares = moves.getAttackedSquares();
-            Square kingSquare = board.getKingPosition(board.getSideToMove());
-            for (Square square: checkSquares) {
-                if (square.getIndex() == kingSquare.getIndex()) {
+        Set<Square> checkSquares = moves.getAttackedSquares();
+        for (Square disallowedSquare: board.getDisallowedCheckSquares()) {
+            for (Square checkSquare: checkSquares) {
+                if (checkSquare.getIndex() == disallowedSquare.getIndex()) {
                     // TODO: 27.09.2017 parentBranch.kill(value)
                 }
             }
-        } else {
-
         }
     }
 
     public void findNewBranches(int depth) {
         branches = new ArrayList<>();
-        ArrayList<Move> counterMoves = moves.getAllPossibleMoves();
+        List<Move> counterMoves = moves.getAllPossibleMoves();
         for (Move move: counterMoves) {
             branches.add(new Branch(board.getCopy(), move, depth - 1));
         }
+    }
+
+    void die() {
+
     }
 
 }

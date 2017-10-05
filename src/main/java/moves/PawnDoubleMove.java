@@ -15,6 +15,6 @@ public class PawnDoubleMove implements Move {
 
     @Override
     public void move(Board board) {
-        // TODO: 27.09.2017 Implement double move en passant updating
+        board.pawnDoubleMove(startSquare, endSquare);
     }
 }

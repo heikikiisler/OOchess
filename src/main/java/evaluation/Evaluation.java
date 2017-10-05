@@ -1,13 +1,12 @@
 package evaluation;
 
 import board.Board;
-import com.esotericsoftware.kryo.Kryo;
 import moves.Move;
-import moves.NormalMove;
 import moves.Moves;
-import util.Conf;
+import util.Config;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.TreeMap;
 
 
@@ -26,7 +25,7 @@ public class Evaluation {
         char[] pieces = board.getPieces();
         for (char piece: pieces) {
             if (piece != '.') {
-                sum += Conf.getPieceValue(piece);
+                sum += Config.getPieceValue(piece);
             }
         }
         return sum;
@@ -39,7 +38,7 @@ public class Evaluation {
 
     public TreeMap<Double, Move> getPlySortedMoves(int side) {
         TreeMap<Double, Move> sortedMoves = new TreeMap<>();
-        ArrayList<Move> possibleMoves = moves.getAllPossibleMoves();
+        List<Move> possibleMoves = moves.getAllPossibleMoves();
         for (Move move: possibleMoves) {
             sortedMoves.put(getTryMoveValue(move), move);
         }
