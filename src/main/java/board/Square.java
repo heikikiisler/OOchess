@@ -6,6 +6,8 @@ public class Square {
     private int col;
     private int index;
 
+    Square() {}
+
     Square(int index) {
         this.index = index;
         this.row = index / 8;

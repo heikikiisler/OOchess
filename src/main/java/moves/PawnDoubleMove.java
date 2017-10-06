@@ -15,6 +15,9 @@ public class PawnDoubleMove implements Move {
 
     @Override
     public void move(Board board) {
+        if (endSquare.getRow() == 7 || endSquare.getRow() == 0) {
+            System.out.println("PawnDoubleMove.move");
+        }
         board.pawnDoubleMove(startSquare, endSquare);
     }
 }

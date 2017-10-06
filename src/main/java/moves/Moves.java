@@ -134,15 +134,14 @@ public class Moves {
     private void getPawnMoves(Square square) {
         boolean isPromoting = side == 1 && square.getRow() == 6 || side == -1 && square.getRow() == 1;
         Square forwardSquare = square.getOffsetSquare(side, 0);
-        Square[] takingSquares = new Square[2];
-        takingSquares[0] = square.getOffsetSquare(side, -1);
-        takingSquares[1] = square.getOffsetSquare(side, 1);
+        int[] takingColOffsets = new int[]{1, -1};
         if (board.isSquareEmpty(forwardSquare)) {
             if (isPromoting) {
+                board.printBoard();
                 getPromotionMovesForSquares(square, forwardSquare);
             } else {
                 addNormalMove(square, forwardSquare);
-                if (side == 1 && square.getRow() == 1 || side == -1 && square.getRow() == 6) {
+                if ((side == 1 && square.getRow() == 1) || (side == -1 && square.getRow() == 6)) {
                     Square doubleForwardSquare = square.getOffsetSquare(side * 2, 0);
                     if (board.isSquareEmpty(doubleForwardSquare)) {
                         specialMoves.add(new PawnDoubleMove(square, doubleForwardSquare));
@@ -150,16 +149,19 @@ public class Moves {
                 }
             }
         }
-        for (Square takingSquare: takingSquares) {
-            if (!board.isSquareEmpty(takingSquare)) {
-                if (board.getPieceSide(takingSquare) == -side) {
-                    if (isPromoting) {
-                        getPromotionMovesForSquares(square, takingSquare);
+        for (int takingColOffset: takingColOffsets) {
+            if (square.isOffsetOnBoard(side, takingColOffset)) {
+                Square takingSquare = square.getOffsetSquare(side, takingColOffset);
+                if (!board.isSquareEmpty(takingSquare)) {
+                    if (board.getPieceSide(takingSquare) == -side) {
+                        if (isPromoting) {
+                            getPromotionMovesForSquares(square, takingSquare);
+                        } else {
+                            addAttackMove(square, takingSquare, board.getPiece(takingSquare));
+                        }
                     } else {
-                        addAttackMove(square, takingSquare, board.getPiece(takingSquare));
+                        addDefendMove(square, takingSquare, board.getPiece(takingSquare));
                     }
-                } else {
-                    addDefendMove(square, takingSquare, board.getPiece(takingSquare));
                 }
             }
         }
@@ -191,19 +193,26 @@ public class Moves {
 
     private void getEnPassantMoves() {
         if (board.getEnPassantSquare() != null) {
-            getEnPassantMove(board.getEnPassantSquare().getOffsetSquare(-side, -1));
-            getEnPassantMove(board.getEnPassantSquare().getOffsetSquare(-side, 1));
+            getEnPassantMove(-side, -1);
+            getEnPassantMove(-side, 1);
         }
     }
 
-    private void getEnPassantMove(Square startSquare) {
-        char piece = (side == 1) ? 'P' : 'p';
-        if (startSquare.isOnBoard() && board.getPiece(startSquare) == piece) {
-            specialMoves.add(new EnPassantMove(startSquare));
+    private void getEnPassantMove(int rowOffset, int colOffset) {
+        if (board.getEnPassantSquare().isOffsetOnBoard(rowOffset, colOffset)) {
+            Square startSquare = board.getEnPassantSquare().getOffsetSquare(rowOffset, colOffset);
+            char piece = (side == 1) ? 'P' : 'p';
+            if (board.getPiece(startSquare) == piece) {
+                specialMoves.add(new EnPassantMove(startSquare));
+            }
         }
     }
 
     private void addNormalMove(Square startSquare, Square endSquare) {
+        if (endSquare.getIndex() == 0 && board.getPiece(startSquare) == 'p') {
+            board.printBoard();
+            System.out.println("Moves.addNormalMove");
+        }
         normalMoves.add(new NormalMove(startSquare, endSquare));
         attackedSquares.add(endSquare);
     }

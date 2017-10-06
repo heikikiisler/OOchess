@@ -148,8 +148,9 @@ public class Board {
     }
 
     public void enPassantMove(Square startSquare) {
-        setPiece(getPiece(enPassantSquare), startSquare);
-        setPiece('.', enPassantSquare);
+        System.out.println(String.format("Piece: %c, start square: %d, %d", getPiece(startSquare), startSquare.getRow(), startSquare.getCol()));
+        setPiece(getPiece(startSquare), enPassantSquare);
+        setPiece('.', startSquare);
         setPiece('.', enPassantSquare.getOffsetSquare(-sideToMove, 0));
         refreshAlways();
         currentInactivePlies = 0;
@@ -159,7 +160,7 @@ public class Board {
         move(new NormalMove(startSquare, endSquare));
         currentInactivePlies = 0;
         refreshAlways();
-        enPassantSquare = startSquare.getOffsetSquare(sideToMove, 0);
+        enPassantSquare = startSquare.getOffsetSquare(-sideToMove, 0);
     }
 
     private void refreshAlways() {

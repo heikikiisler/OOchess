@@ -1,27 +1,40 @@
 package evaluation;
 
 import board.Board;
+import moves.Branch;
 import moves.Move;
 import moves.Moves;
 import util.Config;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeMap;
 
 
 public class Evaluation {
 
     private Board board;
     public Moves moves;
+    private int side;
 
     public Evaluation(Board board) {
         this.board = board;
+        this.side = board.getSideToMove();
         this.moves = new Moves(board);
     }
 
-    public int getBoardMaterialValue(Board board) {
-        int sum = 0;
+    public Evaluation(Moves moves) {
+        this.board = moves.board;
+        this.side = board.getSideToMove();
+        this.moves = moves;
+    }
+
+    public double getBoardTotalValue() {
+        // TODO: 06.10.2017 Side multiplier for movesValues
+        return getBoardMaterialValue() + board.getSideToMove() * getMovesValue();
+    }
+
+    private double getBoardMaterialValue() {
+        double sum = 0;
         char[] pieces = board.getPieces();
         for (char piece: pieces) {
             if (piece != '.') {
@@ -31,24 +44,37 @@ public class Evaluation {
         return sum;
     }
 
-
-    private double getBoardTotalValue(Board board) {
-        return getBoardMaterialValue(board);
+    private double getMovesValue() {
+        // TODO: 06.10.2017 Also account for opponent moves
+        double normal = Config.NORMAL_MULTIPLIER * moves.getAllPossibleMoves().size();
+        double attack = Config.ATTACK_MULTIPLIER * moves.getAttackMoves().size();
+        double defend = Config.DEFEND_MULTIPLIER * moves.getDefendMoves().size();
+        return normal + attack + defend;
     }
 
-    public TreeMap<Double, Move> getPlySortedMoves(int side) {
-        TreeMap<Double, Move> sortedMoves = new TreeMap<>();
+    public Move getBestMove() {
         List<Move> possibleMoves = moves.getAllPossibleMoves();
+        List<Branch> branches = new ArrayList<>();
         for (Move move: possibleMoves) {
-            sortedMoves.put(getTryMoveValue(move), move);
+            branches.add(new Branch(board, move, Config.DEPTH));
         }
-        return sortedMoves;
-    }
-
-    private double getTryMoveValue(Move move) {
-        Board copiedBoard = board.getCopy();
-        move.move(copiedBoard);
-        return getBoardTotalValue(copiedBoard);
+        double bestValue = branches.get(0).getValue();
+        Branch bestBranch = branches.get(0);
+        for (Branch branch: branches) {
+            double branchValue = branch.getValue();
+            if (side == 1) {
+                if (branchValue > bestValue) {
+                    bestValue = branchValue;
+                    bestBranch = branch;
+                }
+            } else {
+                if (branchValue < bestValue) {
+                    bestValue = branchValue;
+                    bestBranch = branch;
+                }
+            }
+        }
+        return bestBranch.getMove();
     }
 
 

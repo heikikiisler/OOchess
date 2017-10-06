@@ -21,10 +21,20 @@ of the engine.
 
 ### TODO
 
-* Implement Move classes move() methods with board parameter updating
+Chess engine:
+* _n_ depth branches
 * Filter moves that leave king in check
 * 3 move draw rule (move history?)
 * Pruning search tree
 * Unit tests for move methods
 * Benchmarking tests
 * Save PGN for every game
+
+Data preparation:
+* Obtain suitable board position dataset
+* Add evaluation parameters _X_ (material balance, available moves count, ...)
+* Add engine evaluation _y_
+
+Machine learning:
+* Train on data (probably with linear regression)
+* Link to chess evaluation config
