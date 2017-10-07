@@ -2,6 +2,7 @@ package moves;
 
 import board.Board;
 import board.Square;
+import board.Squares;
 
 public class NormalMove implements Move {
 
@@ -24,6 +25,10 @@ public class NormalMove implements Move {
     @Override
     public void move(Board board) {
         board.move(this);
+    }
+
+    public static NormalMove get(int startRow, int startCol, int endRow, int endCol) {
+        return new NormalMove(Squares.get(startRow, startCol), Squares.get(endRow, endCol));
     }
 
 }

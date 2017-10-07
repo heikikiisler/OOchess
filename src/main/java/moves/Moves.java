@@ -69,12 +69,12 @@ public class Moves {
     }
 
     private void getKnightMoves(Square square) {
-        int[][][] vectors = {{{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}, {2, -1}, {2, 1}}};
+        int[][][] vectors = {{{-2, -1}}, {{-2, 1}}, {{-1, -2}}, {{-1, 2}}, {{1, -2}}, {{1, 2}}, {{2, -1}}, {{2, 1}}};
         getVectorMoves(square, vectors);
     }
 
     private void getKingMoves(Square square) {
-        int[][][] vectors = {{{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}}};
+        int[][][] vectors = {{{-1, -1}}, {{-1, 0}}, {{-1, 1}}, {{0, -1}}, {{0, 1}}, {{1, -1}}, {{1, 0}}, {{1, 1}}};
         getVectorMoves(square, vectors);
     }
 
@@ -218,6 +218,10 @@ public class Moves {
     }
 
     private void addAttackMove(Square startSquare, Square endSquare, char targetPiece) {
+        if (targetPiece == 'K' || targetPiece == 'k') {
+//            board.printBoard();
+//            System.out.println("Target king");
+        }
         attackMoves.add(new AttackMove(startSquare, endSquare, targetPiece));
         attackedSquares.add(endSquare);
     }

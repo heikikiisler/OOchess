@@ -1,6 +1,7 @@
 package board;
 
 import com.esotericsoftware.kryo.Kryo;
+import moves.Move;
 import moves.NormalMove;
 
 import java.util.ArrayList;
@@ -70,9 +71,18 @@ public class Board {
 
     public void move(NormalMove move) {
         char piece = getPiece(move.getStartSquare());
-        refreshAlways();
-        if (getPiece(move.getEndSquare()) != '.') {
+        if (getPiece(move.getEndSquare()) == '.') {
             currentInactivePlies++;
+        } else {
+            currentInactivePlies = 0;
+        }
+        if (getPiece(move.getStartSquare()) == '.') {
+//            printBoard();
+//            System.out.println("Start square '.'");
+        }
+        if (getPiece(move.getEndSquare()) == 'K' || getPiece(move.getEndSquare()) == 'k') {
+            printBoard();
+            System.out.println("Taking king");
         }
         // Castling rights
         if (piece == 'K') {
@@ -93,6 +103,11 @@ public class Board {
         // Finally move piece
         setPiece(piece, move.getEndSquare());
         setPiece('.', move.getStartSquare());
+        refreshAlways();
+    }
+
+    public void move(Move move) {
+        move.move(this);
     }
 
     public void castlingMove(boolean kingSide) {
@@ -145,6 +160,7 @@ public class Board {
         setPiece('.', startSquare);
         enPassantSquare = null;
         currentInactivePlies = 0;
+        refreshAlways();
     }
 
     public void enPassantMove(Square startSquare) {
@@ -159,7 +175,6 @@ public class Board {
     public void pawnDoubleMove(Square startSquare, Square endSquare) {
         move(new NormalMove(startSquare, endSquare));
         currentInactivePlies = 0;
-        refreshAlways();
         enPassantSquare = startSquare.getOffsetSquare(-sideToMove, 0);
     }
 
@@ -231,6 +246,7 @@ public class Board {
                 return new Square(i);
             }
         }
+        printBoard();
         throw new IllegalStateException(String.format("King not found, side: %s", side));
     }
 

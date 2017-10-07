@@ -10,6 +10,7 @@ import java.util.Set;
 
 public class Branch {
 
+    private ArrayList<Square> disallowedCheckSquares;
     private ArrayList<Branch> branches = new ArrayList<>();
     private Board board;
     private Move move;
@@ -24,26 +25,39 @@ public class Branch {
         this.move = move;
         this.depth = depth;
         this.side = board.getSideToMove();
+        this.disallowedCheckSquares = board.getDisallowedCheckSquares();
         move.move(this.board);
         this.moves = new Moves(board);
         if (checkForCheck()) {
             findNewBranches();
+        } else {
+            System.out.println("Check for check failed");
         }
     }
 
-    private Branch getSubBranch(Branch parent, Move move) {
-        Branch branch = new Branch(parent.board, move, this.depth - 1);
-        branch.parent = parent;
-        return branch;
+    private Branch(Branch parent, Move move) {
+        this.board = parent.board.getCopy();
+        this.move = move;
+        this.depth = parent.depth - 1;
+        this.side = board.getSideToMove();
+        this.disallowedCheckSquares = board.getDisallowedCheckSquares();
+        move.move(this.board);
+        this.moves = new Moves(board);
+        if (checkForCheck()) {
+            findNewBranches();
+        } else {
+            System.out.println("Check for check failed");
+        }
     }
 
     private boolean checkForCheck() {
         Set<Square> checkSquares = moves.getAttackedSquares();
-        for (Square disallowedSquare: board.getDisallowedCheckSquares()) {
+        for (Square disallowedSquare: disallowedCheckSquares) {
             for (Square checkSquare: checkSquares) {
                 if (checkSquare.getIndex() == disallowedSquare.getIndex()) {
                     if (parent != null) {
                         parent.die();
+                        alive = false;
                     }
                     return false;
                 }
@@ -57,7 +71,7 @@ public class Branch {
             List<Move> counterMoves = moves.getAllPossibleMoves();
             for (Move move : counterMoves) {
                 if (alive) {
-                    branches.add(getSubBranch(this, move));
+                    branches.add(new Branch(this, move));
                 } else {
                     return;
                 }
@@ -78,16 +92,22 @@ public class Branch {
         if (branches.isEmpty()) {
             return new Evaluation(moves).getBoardTotalValue();
         }
-        double bestValue = branches.get(0).getValue();
+        boolean valueSet = false;
+        double bestValue = 0;
         for (Branch branch: branches) {
             double branchValue = branch.getValue();
-            if (side == 1) {
-                if (branchValue > bestValue) {
-                    bestValue = branchValue;
-                }
+            if (!valueSet) {
+                bestValue = branchValue;
+                valueSet = true;
             } else {
-                if (branchValue < bestValue) {
-                    bestValue = branchValue;
+                if (side == 1) {
+                    if (branchValue > bestValue) {
+                        bestValue = branchValue;
+                    }
+                } else {
+                    if (branchValue < bestValue) {
+                        bestValue = branchValue;
+                    }
                 }
             }
         }

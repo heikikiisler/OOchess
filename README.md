@@ -13,7 +13,7 @@ of the engine.
 ### Goals
 
 - [x] Chess engine possible moves search
-- [ ] Chess engine best move search with _n_ depth
+- [x] Chess engine best move search with _n_ depth
 - [ ] Chess engine UCI protocol game implementation
 - [ ] Machine learning experimenting with config parameters
 - [ ] Beat amateur player
@@ -22,11 +22,11 @@ of the engine.
 ### TODO
 
 Chess engine:
-* _n_ depth branches
-* Filter moves that leave king in check
+* Branches debugging
+    * Projected moves where own king is taken
+    * Many start moves have empty start square
 * 3 move draw rule (move history?)
 * Pruning search tree
-* Unit tests for move methods
 * Benchmarking tests
 * Save PGN for every game
 

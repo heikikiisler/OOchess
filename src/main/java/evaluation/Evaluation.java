@@ -29,11 +29,10 @@ public class Evaluation {
     }
 
     public double getBoardTotalValue() {
-        // TODO: 06.10.2017 Side multiplier for movesValues
-        return getBoardMaterialValue() + board.getSideToMove() * getMovesValue();
+        return board.getSideToMove() * getMovesValue() + getBoardMaterialValue();
     }
 
-    private double getBoardMaterialValue() {
+    public double getBoardMaterialValue() {
         double sum = 0;
         char[] pieces = board.getPieces();
         for (char piece: pieces) {
@@ -58,22 +57,29 @@ public class Evaluation {
         for (Move move: possibleMoves) {
             branches.add(new Branch(board, move, Config.DEPTH));
         }
-        double bestValue = branches.get(0).getValue();
-        Branch bestBranch = branches.get(0);
+        double bestValue = 0;
+        Branch bestBranch = null;
         for (Branch branch: branches) {
             double branchValue = branch.getValue();
-            if (side == 1) {
-                if (branchValue > bestValue) {
-                    bestValue = branchValue;
-                    bestBranch = branch;
-                }
+            if (bestBranch == null) {
+                bestBranch = branch;
+                bestValue = branchValue;
             } else {
-                if (branchValue < bestValue) {
-                    bestValue = branchValue;
-                    bestBranch = branch;
+                if (side == 1) {
+                    if (branchValue > bestValue) {
+                        bestValue = branchValue;
+                        bestBranch = branch;
+                    }
+                } else {
+                    if (branchValue < bestValue) {
+                        bestValue = branchValue;
+                        bestBranch = branch;
+                    }
                 }
             }
         }
+        System.out.println(String.format("best branchValue: %s", bestValue));
+        assert bestBranch != null;
         return bestBranch.getMove();
     }
 

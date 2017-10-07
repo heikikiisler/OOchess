@@ -10,11 +10,20 @@ public class Game {
 
     private Board board;
 
-    public void moveBestMove(int side) {
-//        int[][] bestMove = evaluation.getSortedMoves(side);
-//        System.out.println(Arrays.deepToString(bestMove));
-//        board.move(bestMove);
-//        board.printBoard();
+    public Game() {
+        this.board = new Board();
+    }
+
+    public void moveBestMove() {
+        Evaluation evaluation = new Evaluation(board);
+        evaluation.getBestMove().move(board);
+    }
+
+    public void playAgainstItself(int numberOfPlies) {
+        for (int i = 0; i < numberOfPlies; i++) {
+            moveBestMove();
+            board.printBoard();
+        }
     }
 
 }

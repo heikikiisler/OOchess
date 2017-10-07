@@ -7,6 +7,7 @@ import evaluation.Evaluation;
 import moves.Move;
 import moves.Moves;
 import moves.NormalMove;
+import moves.PawnDoubleMove;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -47,4 +48,23 @@ public class Tests {
         board.move(new NormalMove(Squares.get(0, 4), Squares.get(1, 4)));
         assertEquals(moves.getAllPossibleMoves().size(), 41);
     }
+
+    @Test
+    public void sideToMoveTests() {
+        assertEquals(board.getSideToMove(), 1);
+        board.move(NormalMove.get(1, 4, 2, 4));
+        assertEquals(board.getSideToMove(), -1);
+        board.move(NormalMove.get(6, 4, 5, 4));
+        assertEquals(board.getSideToMove(), 1);
+        board.move(new PawnDoubleMove(Squares.get(1, 3), Squares.get(3, 3)));
+        assertEquals(board.getSideToMove(), -1);
+        board.printBoard();
+    }
+
+    @Test
+    public void startBoardHasEqualMaterial() {
+        evaluation = new Evaluation(board);
+        assertEquals(evaluation.getBoardMaterialValue(), 0.0, 0.01);
+    }
+
 }
