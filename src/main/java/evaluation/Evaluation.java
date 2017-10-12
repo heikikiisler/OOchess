@@ -8,6 +8,7 @@ import util.Config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 public class Evaluation {
@@ -81,6 +82,10 @@ public class Evaluation {
         System.out.println(String.format("best branchValue: %s", bestValue));
         assert bestBranch != null;
         return bestBranch.getMove();
+    }
+
+    public Move getRandomMove() {
+        return moves.getAllPossibleMoves().get(new Random().nextInt(moves.getAllPossibleMoves().size()));
     }
 
 
