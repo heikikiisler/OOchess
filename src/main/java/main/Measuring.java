@@ -2,7 +2,6 @@ package main;
 
 import board.Board;
 import evaluation.Evaluation;
-import moves.NormalMove;
 import moves.Moves;
 
 import java.time.Duration;

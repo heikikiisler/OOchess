@@ -1,10 +1,9 @@
 package game;
 
 import board.Board;
+import board.Square;
 import evaluation.Evaluation;
-import moves.Moves;
-
-import java.util.Arrays;
+import moves.Branch;
 
 public class Game {
 
@@ -23,6 +22,8 @@ public class Game {
         for (int i = 0; i < numberOfPlies; i++) {
             moveBestMove();
             board.printBoard();
+            System.out.println(Branch.map.entrySet());
+            System.out.println(Square.count);
         }
     }
 

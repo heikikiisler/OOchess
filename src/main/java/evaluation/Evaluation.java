@@ -13,8 +13,8 @@ import java.util.Random;
 
 public class Evaluation {
 
-    private Board board;
     public Moves moves;
+    private Board board;
     private int side;
 
     public Evaluation(Board board) {
@@ -36,7 +36,7 @@ public class Evaluation {
     public double getBoardMaterialValue() {
         double sum = 0;
         char[] pieces = board.getPieces();
-        for (char piece: pieces) {
+        for (char piece : pieces) {
             if (piece != '.') {
                 sum += Config.getPieceValue(piece);
             }
@@ -55,12 +55,12 @@ public class Evaluation {
     public Move getBestMove() {
         List<Move> possibleMoves = moves.getAllPossibleMoves();
         List<Branch> branches = new ArrayList<>();
-        for (Move move: possibleMoves) {
+        for (Move move : possibleMoves) {
             branches.add(new Branch(board, move, Config.DEPTH));
         }
         double bestValue = 0;
         Branch bestBranch = null;
-        for (Branch branch: branches) {
+        for (Branch branch : branches) {
             double branchValue = branch.getValue();
             if (bestBranch == null) {
                 bestBranch = branch;
@@ -87,7 +87,6 @@ public class Evaluation {
     public Move getRandomMove() {
         return moves.getAllPossibleMoves().get(new Random().nextInt(moves.getAllPossibleMoves().size()));
     }
-
 
 
 }

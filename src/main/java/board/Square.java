@@ -6,15 +6,22 @@ public class Square {
     private int col;
     private int index;
 
-    Square() {}
+    public static int count = 0;
+
+    // For Kryo
+    Square() {
+        count++;
+    }
 
     Square(int index) {
+        count++;
         this.index = index;
         this.row = index / 8;
         this.col = index % 8;
     }
 
     Square(int row, int col) {
+        count++;
         this.row = row;
         this.col = col;
         this.index = row * 8 + col;
@@ -43,7 +50,7 @@ public class Square {
     public boolean isOffsetOnBoard(int rowOffset, int colOffset) {
         int r = row + rowOffset;
         int c = col + colOffset;
-        return r >= 0 && r <= 7 && c >=0 && c <= 7;
+        return r >= 0 && r <= 7 && c >= 0 && c <= 7;
     }
 
 }

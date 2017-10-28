@@ -18,6 +18,31 @@ public class Moves {
     private List<Move> specialMoves;
     private Set<Square> attackedSquares;
 
+    private static final int[][][] KNIGHT_VECTORS =
+            {{{-2, -1}}, {{-2, 1}}, {{-1, -2}}, {{-1, 2}}, {{1, -2}}, {{1, 2}}, {{2, -1}}, {{2, 1}}};
+
+    private static final int[][][] KING_VECTORS =
+            {{{-1, -1}}, {{-1, 0}}, {{-1, 1}}, {{0, -1}}, {{0, 1}}, {{1, -1}}, {{1, 0}}, {{1, 1}}};
+    private static final int[][][] BISHOP_VECTORS =
+            {{{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7}},
+            {{-1, 1}, {-2, 2}, {-3, 3}, {-4, 4}, {-5, 5}, {-6, 6}, {-7, 7}},
+            {{1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {7, -7}},
+            {{-1, -1}, {-2, -2}, {-3, -3}, {-4, -4}, {-5, -5}, {-6, -6}, {-7, -7}}};
+    private static final int[][][] ROOK_VECTORS =
+            {{{1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}},
+            {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}},
+            {{0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6}, {0, -7}},
+            {{-1, 0}, {-2, 0}, {-3, 0}, {-4, 0}, {-5, 0}, {-6, 0}, {-7, 0}}};
+    private static final int[][][] QUEEN_VECTORS =
+            {{{1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}},
+            {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}},
+            {{0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6}, {0, -7}},
+            {{-1, 0}, {-2, 0}, {-3, 0}, {-4, 0}, {-5, 0}, {-6, 0}, {-7, 0}},
+            {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7}},
+            {{-1, 1}, {-2, 2}, {-3, 3}, {-4, 4}, {-5, 5}, {-6, 6}, {-7, 7}},
+            {{1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {7, -7}},
+            {{-1, -1}, {-2, -2}, {-3, -3}, {-4, -4}, {-5, -5}, {-6, -6}, {-7, -7}}};
+
     public Moves(Board board) {
         this.board = board;
         this.side = this.board.getSideToMove();
@@ -52,13 +77,14 @@ public class Moves {
                 break;
             case '.':
                 break;
-            default: throw new IllegalArgumentException();
+            default:
+                throw new IllegalArgumentException();
         }
     }
 
     private void getAllAvailableMoves() {
         Square[] squares = Squares.getAll();
-        for (Square square: squares) {
+        for (Square square : squares) {
             char piece = board.getPiece(square);
             if (Board.pieceIsSide(piece, side)) {
                 getAvailableMoves(square);
@@ -69,49 +95,28 @@ public class Moves {
     }
 
     private void getKnightMoves(Square square) {
-        int[][][] vectors = {{{-2, -1}}, {{-2, 1}}, {{-1, -2}}, {{-1, 2}}, {{1, -2}}, {{1, 2}}, {{2, -1}}, {{2, 1}}};
-        getVectorMoves(square, vectors);
+        getVectorMoves(square, KNIGHT_VECTORS);
     }
 
     private void getKingMoves(Square square) {
-        int[][][] vectors = {{{-1, -1}}, {{-1, 0}}, {{-1, 1}}, {{0, -1}}, {{0, 1}}, {{1, -1}}, {{1, 0}}, {{1, 1}}};
-        getVectorMoves(square, vectors);
+        getVectorMoves(square, KING_VECTORS);
     }
 
     private void getRookMoves(Square square) {
-        int[][][] vectors =
-            {{{1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}},
-            {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}},
-            {{0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6}, {0, -7}},
-            {{-1, 0}, {-2, 0}, {-3, 0}, {-4, 0}, {-5, 0}, {-6, 0}, {-7, 0}}};
-        getVectorMoves(square, vectors);
+        getVectorMoves(square, ROOK_VECTORS);
     }
 
     private void getBishopMoves(Square square) {
-        int[][][] vectors =
-            {{{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7}},
-            {{-1, 1}, {-2, 2}, {-3, 3}, {-4, 4}, {-5, 5}, {-6, 6}, {-7, 7}},
-            {{1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {7, -7}},
-            {{-1, -1}, {-2, -2}, {-3, -3}, {-4, -4}, {-5, -5}, {-6, -6}, {-7, -7}}};
-        getVectorMoves(square, vectors);
+        getVectorMoves(square, BISHOP_VECTORS);
     }
 
     private void getQueenMoves(Square square) {
-        int[][][] vectors =
-            {{{1, 0}, {2, 0}, {3, 0}, {4, 0}, {5, 0}, {6, 0}, {7, 0}},
-            {{0, 1}, {0, 2}, {0, 3}, {0, 4}, {0, 5}, {0, 6}, {0, 7}},
-            {{0, -1}, {0, -2}, {0, -3}, {0, -4}, {0, -5}, {0, -6}, {0, -7}},
-            {{-1, 0}, {-2, 0}, {-3, 0}, {-4, 0}, {-5, 0}, {-6, 0}, {-7, 0}},
-            {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}, {6, 6}, {7, 7}},
-            {{-1, 1}, {-2, 2}, {-3, 3}, {-4, 4}, {-5, 5}, {-6, 6}, {-7, 7}},
-            {{1, -1}, {2, -2}, {3, -3}, {4, -4}, {5, -5}, {6, -6}, {7, -7}},
-            {{-1, -1}, {-2, -2}, {-3, -3}, {-4, -4}, {-5, -5}, {-6, -6}, {-7, -7}}};
-        getVectorMoves(square, vectors);
+        getVectorMoves(square, QUEEN_VECTORS);
     }
 
     private void getVectorMoves(Square square, int[][][] vectors) {
-        for (int[][] subVectors: vectors) {
-            for (int[] vector: subVectors) {
+        for (int[][] subVectors : vectors) {
+            for (int[] vector : subVectors) {
                 if (square.isOffsetOnBoard(vector[0], vector[1])) {
                     Square endSquare = square.getOffsetSquare(vector[0], vector[1]);
                     char targetPiece = board.getPiece(endSquare);
@@ -149,7 +154,7 @@ public class Moves {
                 }
             }
         }
-        for (int takingColOffset: takingColOffsets) {
+        for (int takingColOffset : takingColOffsets) {
             if (square.isOffsetOnBoard(side, takingColOffset)) {
                 Square takingSquare = square.getOffsetSquare(side, takingColOffset);
                 if (!board.isSquareEmpty(takingSquare)) {
@@ -169,7 +174,7 @@ public class Moves {
 
     private void getPromotionMovesForSquares(Square startSquare, Square endSquare) {
         char[] promotionPieces = (side == 1) ? Board.getWhitePromotionPieces() : Board.getBlackPromotionPieces();
-        for (char piece: promotionPieces) {
+        for (char piece : promotionPieces) {
             specialMoves.add(new PromotionMove(startSquare, endSquare, piece));
         }
     }

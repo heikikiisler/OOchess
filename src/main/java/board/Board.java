@@ -9,16 +9,12 @@ import java.util.ArrayList;
 
 public class Board {
 
-    private char[] pieces;
-
-    private static final Kryo KRYO = new Kryo();
-
+//    private static final Kryo KRYO = new Kryo();
     private static final char[] WHITE_PIECES = new char[]{'P', 'R', 'N', 'B', 'Q', 'K'};
     private static final char[] BLACK_PIECES = new char[]{'p', 'r', 'n', 'b', 'q', 'k'};
-
     private static final char[] WHITE_PROMOTION_PIECES = new char[]{'R', 'N', 'B', 'Q'};
     private static final char[] BLACK_PROMOTION_PIECES = new char[]{'r', 'n', 'b', 'q'};
-
+    private char[] pieces;
     private boolean whiteKingSideCastling = true;
     private boolean whiteQueenSideCastling = true;
     private boolean blackKingSideCastling = true;
@@ -35,6 +31,35 @@ public class Board {
 
     public Board() {
         setUpBoard();
+    }
+
+    private Board(boolean setUp) {
+
+    }
+
+    public static int getPieceSide(char piece) {
+        if (piece == '.') {
+            return 0;
+        } else {
+            for (char c : WHITE_PIECES) {
+                if (piece == c) {
+                    return 1;
+                }
+            }
+        }
+        return -1;
+    }
+
+    public static boolean pieceIsSide(char piece, int side) {
+        return getPieceSide(piece) == side;
+    }
+
+    public static char[] getWhitePromotionPieces() {
+        return WHITE_PROMOTION_PIECES;
+    }
+
+    public static char[] getBlackPromotionPieces() {
+        return BLACK_PROMOTION_PIECES;
     }
 
     private void setUpBoard() {
@@ -77,8 +102,8 @@ public class Board {
             currentInactivePlies = 0;
         }
         if (getPiece(move.getStartSquare()) == '.') {
-//            printBoard();
-//            System.out.println("Start square '.'");
+            printBoard();
+            System.out.println("Start square '.'");
         }
         if (getPiece(move.getEndSquare()) == 'K' || getPiece(move.getEndSquare()) == 'k') {
             printBoard();
@@ -218,19 +243,6 @@ public class Board {
         pieces[square.getIndex()] = piece;
     }
 
-    public static int getPieceSide(char piece) {
-        if (piece == '.') {
-            return 0;
-        } else {
-            for (char c: WHITE_PIECES) {
-                if (piece == c) {
-                    return 1;
-                }
-            }
-        }
-        return -1;
-    }
-
     public int getPieceSide(Square square) {
         return getPieceSide(getPiece(square));
     }
@@ -243,7 +255,7 @@ public class Board {
         char king = (side == 1) ? 'K' : 'k';
         for (int i = 0; i < 64; i++) {
             if (pieces[i] == king) {
-                return new Square(i);
+                return Squares.get(i);
             }
         }
         printBoard();
@@ -254,20 +266,8 @@ public class Board {
         return getPiece(square) == '.';
     }
 
-    public static boolean pieceIsSide(char piece, int side) {
-        return getPieceSide(piece) == side;
-    }
-
     public Square getEnPassantSquare() {
         return enPassantSquare;
-    }
-
-    public static char[] getWhitePromotionPieces() {
-        return WHITE_PROMOTION_PIECES;
-    }
-
-    public static char[] getBlackPromotionPieces() {
-        return BLACK_PROMOTION_PIECES;
     }
 
     public char[] getPieces() {
@@ -279,7 +279,24 @@ public class Board {
     }
 
     public Board getCopy() {
-        return KRYO.copy(this);
+//        return KRYO.copy(this);
+        Board copy = new Board(false);
+        copy.pieces = new char[64];
+        System.arraycopy(pieces, 0, copy.pieces, 0, 64);
+        copy.whiteKingSideCastling = whiteKingSideCastling;
+        copy.whiteQueenSideCastling = whiteQueenSideCastling;
+        copy.blackKingSideCastling = blackKingSideCastling;
+        copy.blackQueenSideCastling = blackQueenSideCastling;
+
+        copy.sideToMove = sideToMove;
+
+        copy.totalPlies = totalPlies;
+        copy.currentInactivePlies = currentInactivePlies;
+
+        copy.enPassantSquare = enPassantSquare;
+
+        copy.disallowedCheckSquares = disallowedCheckSquares;
+        return copy;
     }
 
     public boolean isCastlingAllowed(boolean kingSide) {

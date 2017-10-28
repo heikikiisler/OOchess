@@ -4,11 +4,18 @@ import board.Board;
 import board.Square;
 import evaluation.Evaluation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Branch {
+
+    public static Map<Integer, Integer> map = new HashMap<>();
+
+    static {
+        map.put(0, 0);
+        map.put(1, 0);
+        map.put(2, 0);
+        map.put(3, 0);
+    }
 
     private ArrayList<Square> disallowedCheckSquares;
     private ArrayList<Branch> branches = new ArrayList<>();
@@ -21,39 +28,38 @@ public class Branch {
     private boolean alive = true;
 
     public Branch(Board board, Move move, int depth) {
+        map.put(depth, map.get(depth) + 1);
         this.board = board.getCopy();
         this.move = move;
         this.depth = depth;
-        this.side = board.getSideToMove();
         this.disallowedCheckSquares = board.getDisallowedCheckSquares();
         move.move(this.board);
-        this.moves = new Moves(board);
+        this.side = this.board.getSideToMove();
+        this.moves = new Moves(this.board);
         if (checkForCheck()) {
             findNewBranches();
-        } else {
-            System.out.println("Check for check failed");
         }
     }
 
     private Branch(Branch parent, Move move) {
+        this.parent = parent;
         this.board = parent.board.getCopy();
         this.move = move;
         this.depth = parent.depth - 1;
-        this.side = board.getSideToMove();
+        map.put(depth, map.get(depth) + 1);
         this.disallowedCheckSquares = board.getDisallowedCheckSquares();
         move.move(this.board);
+        this.side = board.getSideToMove();
         this.moves = new Moves(board);
         if (checkForCheck()) {
             findNewBranches();
-        } else {
-            System.out.println("Check for check failed");
         }
     }
 
     private boolean checkForCheck() {
         Set<Square> checkSquares = moves.getAttackedSquares();
-        for (Square disallowedSquare: disallowedCheckSquares) {
-            for (Square checkSquare: checkSquares) {
+        for (Square disallowedSquare : disallowedCheckSquares) {
+            for (Square checkSquare : checkSquares) {
                 if (checkSquare.getIndex() == disallowedSquare.getIndex()) {
                     if (parent != null) {
                         parent.die();
@@ -81,7 +87,9 @@ public class Branch {
 
     private void die() {
         alive = false;
-        parent.killBranch(this);
+        if (parent != null) {
+            parent.killBranch(this);
+        }
     }
 
     private synchronized void killBranch(Branch childBranch) {
@@ -94,7 +102,7 @@ public class Branch {
         }
         boolean valueSet = false;
         double bestValue = 0;
-        for (Branch branch: branches) {
+        for (Branch branch : branches) {
             double branchValue = branch.getValue();
             if (!valueSet) {
                 bestValue = branchValue;

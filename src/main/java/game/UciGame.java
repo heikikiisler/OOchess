@@ -7,7 +7,7 @@ public class UciGame extends AbstractEngine {
 
     @Override
     protected void quit() {
-        
+
     }
 
     @Override

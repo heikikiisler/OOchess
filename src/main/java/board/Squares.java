@@ -1,7 +1,7 @@
 package board;
 
 public class Squares {
-    
+
     private static final Square[] squares = getSquares();
 
     public static Square get(int index) {

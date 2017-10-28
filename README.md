@@ -22,9 +22,7 @@ of the engine.
 ### TODO
 
 Chess engine:
-* Branches debugging
-    * Projected moves where own king is taken
-    * Many start moves have empty start square
+* Board moving and unmoving to avoid memory issues
 * 3 move draw rule (move history?)
 * Pruning search tree
 * Benchmarking tests

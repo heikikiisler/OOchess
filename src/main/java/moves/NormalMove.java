@@ -14,6 +14,10 @@ public class NormalMove implements Move {
         this.endSquare = endSquare;
     }
 
+    public static NormalMove get(int startRow, int startCol, int endRow, int endCol) {
+        return new NormalMove(Squares.get(startRow, startCol), Squares.get(endRow, endCol));
+    }
+
     public Square getStartSquare() {
         return startSquare;
     }
@@ -25,10 +29,6 @@ public class NormalMove implements Move {
     @Override
     public void move(Board board) {
         board.move(this);
-    }
-
-    public static NormalMove get(int startRow, int startCol, int endRow, int endCol) {
-        return new NormalMove(Squares.get(startRow, startCol), Squares.get(endRow, endCol));
     }
 
 }
