@@ -2,13 +2,14 @@ package cemle.board;
 
 import cemle.moves.Move;
 import cemle.moves.NormalMove;
+import com.esotericsoftware.kryo.Kryo;
 
 import java.util.ArrayList;
 
 
 public class Board {
 
-//    private static final Kryo KRYO = new Kryo();
+    private static final Kryo KRYO = new Kryo();
     private static final char[] WHITE_PIECES = new char[]{'P', 'R', 'N', 'B', 'Q', 'K'};
     private static final char[] BLACK_PIECES = new char[]{'p', 'r', 'n', 'b', 'q', 'k'};
     private static final char[] WHITE_PROMOTION_PIECES = new char[]{'R', 'N', 'B', 'Q'};
@@ -32,9 +33,9 @@ public class Board {
         setUpBoard();
     }
 
-    private Board(boolean setUp) {
-
-    }
+//    private Board(boolean setUp) {
+//
+//    }
 
     public static int getPieceSide(char piece) {
         if (piece == '.') {
@@ -278,24 +279,24 @@ public class Board {
     }
 
     public Board getCopy() {
-//        return KRYO.copy(this);
-        Board copy = new Board(false);
-        copy.pieces = new char[64];
-        System.arraycopy(pieces, 0, copy.pieces, 0, 64);
-        copy.whiteKingSideCastling = whiteKingSideCastling;
-        copy.whiteQueenSideCastling = whiteQueenSideCastling;
-        copy.blackKingSideCastling = blackKingSideCastling;
-        copy.blackQueenSideCastling = blackQueenSideCastling;
-
-        copy.sideToMove = sideToMove;
-
-        copy.totalPlies = totalPlies;
-        copy.currentInactivePlies = currentInactivePlies;
-
-        copy.enPassantSquare = enPassantSquare;
-
-        copy.disallowedCheckSquares = disallowedCheckSquares;
-        return copy;
+        return KRYO.copy(this);
+//        Board copy = new Board(false);
+//        copy.pieces = new char[64];
+//        System.arraycopy(pieces, 0, copy.pieces, 0, 64);
+//        copy.whiteKingSideCastling = whiteKingSideCastling;
+//        copy.whiteQueenSideCastling = whiteQueenSideCastling;
+//        copy.blackKingSideCastling = blackKingSideCastling;
+//        copy.blackQueenSideCastling = blackQueenSideCastling;
+//
+//        copy.sideToMove = sideToMove;
+//
+//        copy.totalPlies = totalPlies;
+//        copy.currentInactivePlies = currentInactivePlies;
+//
+//        copy.enPassantSquare = enPassantSquare;
+//
+//        copy.disallowedCheckSquares = disallowedCheckSquares;
+//        return copy;
     }
 
     public boolean isCastlingAllowed(boolean kingSide) {

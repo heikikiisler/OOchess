@@ -39,9 +39,6 @@ public class Branch {
         move.move(this.board);
         this.side = this.board.getSideToMove();
         this.moves = new Moves(this.board);
-        if (checkForCheck()) {
-            findNewBranches();
-        }
     }
 
     private Branch(Branch parent, Move move) {
@@ -54,9 +51,6 @@ public class Branch {
         move.move(this.board);
         this.side = board.getSideToMove();
         this.moves = new Moves(board);
-        if (checkForCheck()) {
-            findNewBranches();
-        }
     }
 
     private boolean checkForCheck() {
@@ -90,34 +84,32 @@ public class Branch {
 
     private void die() {
         alive = false;
-        if (parent != null) {
-            parent.killBranch(this);
-        }
-    }
-
-    private synchronized void killBranch(Branch childBranch) {
-        branches.remove(childBranch);
     }
 
     public double getValue() {
+        if (checkForCheck()) {
+            findNewBranches();
+        }
         if (branches.isEmpty()) {
             return new Evaluation(moves).getBoardTotalValue();
         }
         boolean valueSet = false;
         double bestValue = 0;
         for (Branch branch : branches) {
-            double branchValue = branch.getValue();
-            if (!valueSet) {
-                bestValue = branchValue;
-                valueSet = true;
-            } else {
-                if (side == 1) {
-                    if (branchValue > bestValue) {
-                        bestValue = branchValue;
-                    }
+            if (branch.alive) {
+                double branchValue = branch.getValue();
+                if (!valueSet) {
+                    bestValue = branchValue;
+                    valueSet = true;
                 } else {
-                    if (branchValue < bestValue) {
-                        bestValue = branchValue;
+                    if (side == 1) {
+                        if (branchValue > bestValue) {
+                            bestValue = branchValue;
+                        }
+                    } else {
+                        if (branchValue < bestValue) {
+                            bestValue = branchValue;
+                        }
                     }
                 }
             }
