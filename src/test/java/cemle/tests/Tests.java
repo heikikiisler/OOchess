@@ -1,13 +1,11 @@
-package tests;
+package cemle.tests;
 
-import board.Board;
-import board.Square;
-import board.Squares;
-import evaluation.Evaluation;
-import moves.Move;
-import moves.Moves;
-import moves.NormalMove;
-import moves.PawnDoubleMove;
+import cemle.board.Board;
+import cemle.board.Squares;
+import cemle.evaluation.Evaluation;
+import cemle.moves.Moves;
+import cemle.moves.NormalMove;
+import cemle.moves.PawnDoubleMove;
 import org.junit.Before;
 import org.junit.Test;
 

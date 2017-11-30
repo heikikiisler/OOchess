@@ -1,6 +1,6 @@
-package moves;
+package cemle.moves;
 
-import board.Square;
+import cemle.board.Square;
 
 public class AttackMove extends NormalMove {
 

@@ -1,4 +1,4 @@
-package game;
+package cemle.game;
 
 import com.fluxchess.jcpi.AbstractEngine;
 import com.fluxchess.jcpi.commands.*;

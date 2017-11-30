@@ -1,8 +1,8 @@
-package moves;
+package cemle.moves;
 
-import board.Board;
-import board.Square;
-import board.Squares;
+import cemle.board.Board;
+import cemle.board.Square;
+import cemle.board.Squares;
 
 import java.util.*;
 import java.util.function.Predicate;

@@ -1,7 +1,7 @@
-package moves;
+package cemle.moves;
 
-import board.Board;
-import board.Square;
+import cemle.board.Board;
+import cemle.board.Square;
 
 public class EnPassantMove implements Move {
 
@@ -13,7 +13,7 @@ public class EnPassantMove implements Move {
 
     @Override
     public void move(Board board) {
-        board.printBoard();
+//        board.printBoard();
 //        System.out.println(String.format("En passant square: %d, %d", board.getEnPassantSquare().getRow(), board.getEnPassantSquare().getCol()));
         board.enPassantMove(startSquare);
     }

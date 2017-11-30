@@ -1,10 +1,6 @@
-package main;
+package cemle.main;
 
-import board.Board;
-import board.Square;
-import evaluation.Evaluation;
-import game.Game;
-import moves.Branch;
+import cemle.game.Game;
 
 public class Main {
 
@@ -12,9 +8,12 @@ public class Main {
         Game game = new Game();
         game.playAgainstItself(40);
 //        Board board = new Board();
-//        Evaluation evaluation = new Evaluation(board);
-//        board.move(evaluation.getBestMove());
-//        board.printBoard();
+//        for (int i = 0; i < 40; i++) {
+//            Evaluation evaluation = new Evaluation(board);
+//            board.move(evaluation.getBestMove());
+//            board.printBoard();
+//
+//        }
 //        System.out.println(Branch.map.entrySet());
 //        System.out.println(Square.count);
     }

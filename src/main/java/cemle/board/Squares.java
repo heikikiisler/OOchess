@@ -1,4 +1,4 @@
-package board;
+package cemle.board;
 
 public class Squares {
 

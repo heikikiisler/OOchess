@@ -1,4 +1,4 @@
-package util;
+package cemle.util;
 
 import com.typesafe.config.ConfigFactory;
 
@@ -8,11 +8,12 @@ import java.util.HashMap;
 public class Config {
 
     private static final com.typesafe.config.Config CONFIG = ConfigFactory.parseFile(new File("properties.conf"));
+    private static final HashMap<Character, Integer> VALUES = getValues();
+
     public static final int DEPTH = CONFIG.getInt("branchDepth");
     public static final double NORMAL_MULTIPLIER = CONFIG.getDouble("evaluationMultipliers.normal");
     public static final double ATTACK_MULTIPLIER = CONFIG.getDouble("evaluationMultipliers.attack");
     public static final double DEFEND_MULTIPLIER = CONFIG.getDouble("evaluationMultipliers.defend");
-    private static final HashMap<Character, Integer> VALUES = getValues();
 
     private static HashMap<Character, Integer> getValues() {
         char[] pieces = new char[]{'p', 'r', 'n', 'b', 'q', 'k'};

@@ -1,9 +1,9 @@
-package game;
+package cemle.game;
 
-import board.Board;
-import board.Square;
-import evaluation.Evaluation;
-import moves.Branch;
+import cemle.board.Board;
+import cemle.board.Square;
+import cemle.evaluation.Branch;
+import cemle.evaluation.Evaluation;
 
 public class Game {
 
@@ -24,6 +24,7 @@ public class Game {
             board.printBoard();
             System.out.println(Branch.map.entrySet());
             System.out.println(Square.count);
+            System.gc();
         }
     }
 

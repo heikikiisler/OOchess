@@ -1,10 +1,10 @@
-package moves;
+package cemle.moves;
 
-import board.Board;
-import board.Square;
-import board.Squares;
+import cemle.board.Board;
+import cemle.board.Square;
+import cemle.board.Squares;
 
-public class NormalMove implements Move {
+public class  NormalMove implements Move {
 
     private Square startSquare;
     private Square endSquare;

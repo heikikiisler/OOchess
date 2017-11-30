@@ -1,7 +1,7 @@
-package moves;
+package cemle.moves;
 
-import board.Board;
-import board.Square;
+import cemle.board.Board;
+import cemle.board.Square;
 
 public class PawnDoubleMove implements Move {
 

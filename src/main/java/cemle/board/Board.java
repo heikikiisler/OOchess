@@ -1,8 +1,7 @@
-package board;
+package cemle.board;
 
-import com.esotericsoftware.kryo.Kryo;
-import moves.Move;
-import moves.NormalMove;
+import cemle.moves.Move;
+import cemle.moves.NormalMove;
 
 import java.util.ArrayList;
 
@@ -189,7 +188,7 @@ public class Board {
     }
 
     public void enPassantMove(Square startSquare) {
-        System.out.println(String.format("Piece: %c, start square: %d, %d", getPiece(startSquare), startSquare.getRow(), startSquare.getCol()));
+//        System.out.println(String.format("Piece: %c, start square: %d, %d", getPiece(startSquare), startSquare.getRow(), startSquare.getCol()));
         setPiece(getPiece(startSquare), enPassantSquare);
         setPiece('.', startSquare);
         setPiece('.', enPassantSquare.getOffsetSquare(-sideToMove, 0));

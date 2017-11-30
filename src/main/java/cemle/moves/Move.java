@@ -1,6 +1,6 @@
-package moves;
+package cemle.moves;
 
-import board.Board;
+import cemle.board.Board;
 
 public interface Move {
 

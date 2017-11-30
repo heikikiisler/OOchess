@@ -1,8 +1,10 @@
-package moves;
+package cemle.evaluation;
 
-import board.Board;
-import board.Square;
-import evaluation.Evaluation;
+import cemle.board.Board;
+import cemle.board.Square;
+import cemle.evaluation.Evaluation;
+import cemle.moves.Move;
+import cemle.moves.Moves;
 
 import java.util.*;
 
@@ -15,6 +17,7 @@ public class Branch {
         map.put(1, 0);
         map.put(2, 0);
         map.put(3, 0);
+        map.put(4, 0);
     }
 
     private ArrayList<Square> disallowedCheckSquares;

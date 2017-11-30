@@ -1,8 +1,8 @@
-package main;
+package cemle.main;
 
-import board.Board;
-import evaluation.Evaluation;
-import moves.Moves;
+import cemle.board.Board;
+import cemle.evaluation.Evaluation;
+import cemle.moves.Moves;
 
 import java.time.Duration;
 import java.time.Instant;
