@@ -105,6 +105,7 @@ public class Evaluation {
                 }
             }
         }
+        System.out.println("Best move value: " + bestValue);
         return bestMove;
     }
 

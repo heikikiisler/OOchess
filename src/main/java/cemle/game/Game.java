@@ -1,7 +1,6 @@
 package cemle.game;
 
 import cemle.board.Board;
-import cemle.board.Square;
 import cemle.evaluation.Branch;
 import cemle.evaluation.Evaluation;
 
@@ -23,8 +22,6 @@ public class Game {
             moveBestMove();
             board.printBoard();
             System.out.println(Branch.map.entrySet());
-            System.out.println(Square.count);
-            System.gc();
         }
     }
 

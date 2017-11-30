@@ -33,9 +33,9 @@ public class Board {
         setUpBoard();
     }
 
-//    private Board(boolean setUp) {
-//
-//    }
+    private Board(boolean setUp) {
+
+    }
 
     public static int getPieceSide(char piece) {
         if (piece == '.') {
@@ -279,24 +279,22 @@ public class Board {
     }
 
     public Board getCopy() {
-        return KRYO.copy(this);
-//        Board copy = new Board(false);
-//        copy.pieces = new char[64];
-//        System.arraycopy(pieces, 0, copy.pieces, 0, 64);
-//        copy.whiteKingSideCastling = whiteKingSideCastling;
-//        copy.whiteQueenSideCastling = whiteQueenSideCastling;
-//        copy.blackKingSideCastling = blackKingSideCastling;
-//        copy.blackQueenSideCastling = blackQueenSideCastling;
-//
-//        copy.sideToMove = sideToMove;
-//
-//        copy.totalPlies = totalPlies;
-//        copy.currentInactivePlies = currentInactivePlies;
-//
-//        copy.enPassantSquare = enPassantSquare;
-//
-//        copy.disallowedCheckSquares = disallowedCheckSquares;
-//        return copy;
+        Board copy = new Board(false);
+        copy.pieces = KRYO.copy(pieces);
+        copy.whiteKingSideCastling = KRYO.copy(whiteKingSideCastling);
+        copy.whiteQueenSideCastling = KRYO.copy(whiteQueenSideCastling);
+        copy.blackKingSideCastling = KRYO.copy(blackKingSideCastling);
+        copy.blackQueenSideCastling = KRYO.copy(blackQueenSideCastling);
+
+        copy.sideToMove = KRYO.copy(sideToMove);
+
+        copy.totalPlies = KRYO.copy(totalPlies);
+        copy.currentInactivePlies = KRYO.copy(currentInactivePlies);
+
+        copy.enPassantSquare = enPassantSquare;
+
+        copy.disallowedCheckSquares = KRYO.copy(disallowedCheckSquares);
+        return copy;
     }
 
     public boolean isCastlingAllowed(boolean kingSide) {
