@@ -1,8 +1,11 @@
 package cemle.game;
 
 import cemle.board.Board;
+import cemle.board.Square;
+import cemle.board.Squares;
 import cemle.evaluation.Branch;
 import cemle.evaluation.Evaluation;
+import cemle.moves.NormalMove;
 
 public class Game {
 
@@ -10,6 +13,7 @@ public class Game {
 
     public Game() {
         this.board = new Board();
+        board.printBoard();
     }
 
     public void moveBestMove() {
@@ -21,7 +25,7 @@ public class Game {
         for (int i = 0; i < numberOfPlies; i++) {
             moveBestMove();
             board.printBoard();
-            System.out.println(Branch.map.entrySet());
+            System.out.println(Branch.branchDepthInitializations.entrySet());
         }
     }
 

@@ -50,42 +50,10 @@ public class Evaluation {
         return normal + attack + defend;
     }
 
-//    public Move getBestMove() {
-//        List<Move> possibleMoves = moves.getAllPossibleMoves();
-//        List<BranchOld> branches = new ArrayList<>();
-//        for (Move move : possibleMoves) {
-//            branches.add(new BranchOld(board, move, Config.DEPTH));
-//        }
-//        double bestValue = 0;
-//        BranchOld bestBranch = null;
-//        for (BranchOld branch : branches) {
-//            double branchValue = branch.getValue();
-//            if (bestBranch == null) {
-//                bestBranch = branch;
-//                bestValue = branchValue;
-//            } else {
-//                if (side == 1) {
-//                    if (branchValue > bestValue) {
-//                        bestValue = branchValue;
-//                        bestBranch = branch;
-//                    }
-//                } else {
-//                    if (branchValue < bestValue) {
-//                        bestValue = branchValue;
-//                        bestBranch = branch;
-//                    }
-//                }
-//            }
-//        }
-//        System.out.println(String.format("best branchValue: %s", bestValue));
-//        assert bestBranch != null;
-//        return bestBranch.getMove();
-//    }
-
     public Move getBestMove() {
         Moves moves = new Moves(board);
         List<Move> possibleMoves = moves.getAllPossibleMoves();
-        double bestValue = Double.MIN_VALUE;
+        double bestValue = side == 1 ? Double.MIN_VALUE : Double.MAX_VALUE;
         Move bestMove = null;
         for (Move move : possibleMoves) {
             if (bestMove == null) {
@@ -93,7 +61,7 @@ public class Evaluation {
             }
             Branch branch = new Branch(board, move, Config.DEPTH);
             double moveValue = branch.getValue();
-            if (board.getSideToMove() == 1) {
+            if (side == 1) {
                 if (moveValue > bestValue) {
                     bestMove = move;
                     bestValue = moveValue;

@@ -2,7 +2,6 @@ package cemle.evaluation;
 
 import cemle.board.Board;
 import cemle.board.Square;
-import cemle.evaluation.Evaluation;
 import cemle.moves.Move;
 import cemle.moves.Moves;
 
@@ -10,14 +9,14 @@ import java.util.*;
 
 public class Branch {
 
-    public static Map<Integer, Integer> map = new HashMap<>();
+    public static Map<Integer, Integer> branchDepthInitializations = new HashMap<>();
 
     static {
-        map.put(0, 0);
-        map.put(1, 0);
-        map.put(2, 0);
-        map.put(3, 0);
-        map.put(4, 0);
+        branchDepthInitializations.put(0, 0);
+        branchDepthInitializations.put(1, 0);
+        branchDepthInitializations.put(2, 0);
+        branchDepthInitializations.put(3, 0);
+        branchDepthInitializations.put(4, 0);
     }
 
     private ArrayList<Square> disallowedCheckSquares;
@@ -31,7 +30,7 @@ public class Branch {
     private boolean alive = true;
 
     public Branch(Board board, Move move, int depth) {
-        map.put(depth, map.get(depth) + 1);
+        branchDepthInitializations.put(depth, branchDepthInitializations.get(depth) + 1);
         this.board = board.getCopy();
         this.move = move;
         this.depth = depth;
@@ -46,27 +45,25 @@ public class Branch {
         this.board = parent.board.getCopy();
         this.move = move;
         this.depth = parent.depth - 1;
-        map.put(depth, map.get(depth) + 1);
+        branchDepthInitializations.put(depth, branchDepthInitializations.get(depth) + 1); // TODO: 02-Dec-17 Delete, DEBUG
         this.disallowedCheckSquares = board.getDisallowedCheckSquares();
         move.move(this.board);
         this.side = board.getSideToMove();
         this.moves = new Moves(board);
     }
 
-    private boolean checkForCheck() {
+    private void checkForCheck() {
         Set<Square> checkSquares = moves.getAttackedSquares();
         for (Square disallowedSquare : disallowedCheckSquares) {
             for (Square checkSquare : checkSquares) {
                 if (checkSquare.getIndex() == disallowedSquare.getIndex()) {
                     if (parent != null) {
                         parent.die();
-                        alive = false;
                     }
-                    return false;
+                    alive = false;
                 }
             }
         }
-        return true;
     }
 
     private void findNewBranches() {
@@ -87,7 +84,8 @@ public class Branch {
     }
 
     public double getValue() {
-        if (checkForCheck()) {
+        checkForCheck();
+        if (alive) {
             findNewBranches();
         }
         if (branches.isEmpty()) {

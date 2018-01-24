@@ -142,6 +142,7 @@ public class Moves {
         int[] takingColOffsets = new int[]{1, -1};
         if (board.isSquareEmpty(forwardSquare)) {
             if (isPromoting) {
+                System.out.println("Pawn promotion");
                 board.printBoard();
                 getPromotionMovesForSquares(square, forwardSquare);
             } else {
