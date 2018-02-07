@@ -12,21 +12,12 @@ of the engine.
 
 ### Goals
 
-- [x] Chess engine possible moves search
-- [x] Chess engine best move search with _n_ depth
 - [ ] Chess engine UCI protocol game implementation
 - [ ] Machine learning experimenting with config parameters
 - [ ] Beat amateur player
 
 
 ### TODO
-
-Chess engine:
-* Board moving and unmoving to avoid memory issues
-* 3 move draw rule (move history?)
-* Pruning search tree
-* Benchmarking tests
-* Save PGN for every game
 
 Data preparation:
 * Obtain suitable board position dataset
