@@ -27,6 +27,6 @@ Machine learning:
 * Train on data (probably with linear regression)
 * Link to chess evaluation config
 
-###License
+### License
 
 CEMLE is licensed under the GPL 3 as it depends on python-chess. Full information in LICENSE.txt.
