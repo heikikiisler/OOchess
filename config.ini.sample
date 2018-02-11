@@ -1,0 +1,5 @@
+[file_paths]
+engine_evaluations=../data/stockfish.csv
+uci_moves=../data/data_uci.pgn
+processed_uci_moves=../data/processed_data_uci.txt
+fen_evaluations=../data/fen_evaluations.csv
