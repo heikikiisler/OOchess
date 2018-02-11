@@ -32,7 +32,7 @@ class UciMovesReader:
         ...
 
         """
-        with open(file=self.file_name) as file:
+        with open(file=self.file_name, mode="r") as file:
             lines = file.read().splitlines()
             return [line.split(" ") for line in lines]
 
@@ -43,22 +43,26 @@ class UciMovesReader:
 class CsvGenerator:
     def __init__(self, engine_values, pgn_reader):
         self.engine_values = engine_values
-        self.pgn_reader = pgn_reader
+        self.uci_moves_reader = pgn_reader
 
     def generate_position_lines_from_game(self, game_id):
         board = chess.Board()
         evaluations = self.engine_values.get_values_for_event(game_id)
-        moves = self.pgn_reader.get_moves_for_game(game_id)
+        moves = self.uci_moves_reader.get_moves_for_game(game_id)
         positions = list()
-        total_moves = len(evaluations)
-        for i in range(0, total_moves):
+        total_evaluations = len(evaluations)
+        total_moves = len(moves)
+        if total_evaluations != total_moves:
+            print("Skipping game_id {}, #evaluations={}, #moves={}".format(game_id, total_evaluations, total_moves))
+            return []
+        for i in range(0, total_evaluations):
             board.push_uci(moves[i])
             fen = board.fen()
             evaluation = evaluations[i]
             positions.append((fen, evaluation))
         return positions
 
-    def generate_csv_with_all_games(self):
+    def generate_csv_with_all_games(self, file_path):
         """Example output CSV file:
 
         fen, evaluation
@@ -69,10 +73,30 @@ class CsvGenerator:
         """
         total_games = self.engine_values.total_games
         csv_string = "fen, evaluation\n"
-        for i in range(0, total_games):
-            positions = self.generate_position_lines_from_game(i)
-            for position in positions:
-                csv_string += ("{}, {}\n".format(position[0], position[1]))
         # File directory must exist
-        with open(file="../data/small/fen-evaluations.csv", mode="w") as file:
+        with open(file=file_path, mode="w") as file:
             file.write(csv_string)
+            for i in range(0, total_games):
+                positions = self.generate_position_lines_from_game(i)
+                for position in positions:
+                    if position:  # Can't be empty list
+                        file.write(("{}, {}\n".format(position[0], position[1])))
+                if i % 100 == 0:
+                    print("Finished game {}, completion [{:.1f}%]".format(i, float(i / total_games) * 100))
+
+
+class PgnInfoRemover:
+    def __init__(self, input_path, output_path):
+        self.input_path = input_path
+        self.output_path = output_path
+
+    def run(self):
+        line_starts = ("a", "b", "c", "d", "e", "f", "g")
+        game_results = (" 1-0", " 1/2-1/2", " 0-1")
+        with open(file=self.input_path, mode="r") as input_file:
+            with open(file=self.output_path, mode="w") as output_file:
+                for line in input_file:
+                    if line.startswith(line_starts):
+                        for game_result in game_results:
+                            line = line.replace(game_result, "")
+                        output_file.write(line.lower())
