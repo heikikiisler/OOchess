@@ -11,11 +11,16 @@ containing board positions with corresponding engine evaluations.
 
 ### Goals
 
-- [x] Chess positions and evaluation data set
-- [ ] Board parameters extraction
-- [ ] Learn evaluation function from data
-- [ ] Simple chess engine with UCI protocol
+Engine:
+- [x] Best move search with _n_ depth using negamax
+- [ ] Search tree alpha-beta pruning
+- [ ] UCI protocol interface
 - [ ] Beat amateur player
+
+Learning, board position evaluation function:
+- [x] Chess positions and evaluation data set preparation
+- [ ] Board parameters extraction
+- [ ] Evaluation function learning from data
 
 ### Dependencies
 
