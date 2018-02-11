@@ -100,3 +100,18 @@ class PgnInfoRemover:
                         for game_result in game_results:
                             line = line.replace(game_result, "")
                         output_file.write(line.lower())
+
+
+class BoardFeatureExtractor:
+    def __init__(self, fen):
+        self.board = chess.Board(fen=fen)
+
+    def get_features(self):
+        """Get features from board and return a dictionary
+
+        TODO: Select and get features
+
+        """
+        features = {}
+        features.update({"side_to_move", self.board.turn})
+        return features
