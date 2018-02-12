@@ -59,7 +59,8 @@ class CsvGenerator:
             board.push_uci(moves[i])
             fen = board.fen()
             evaluation = evaluations[i]
-            positions.append((fen, evaluation))
+            if evaluation != "NA":
+                positions.append((fen, evaluation))
         return positions
 
     def generate_csv_with_all_games(self, file_path):
