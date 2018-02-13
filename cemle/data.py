@@ -106,13 +106,68 @@ class PgnInfoRemover:
 class BoardFeatureExtractor:
     def __init__(self, fen):
         self.board = chess.Board(fen=fen)
+        self.turn = self.board.turn
+        self.check = self.board.is_check()
+        self.moves = self.board.legal_moves
+        self.moves_total = len(list(self.moves))
+        self.attacks = self.get_attacks_total(self.moves)
+        self.castling_rights = self.get_castling_rights_sum()
+
+        self.board.push_uci("0000")  # Null move
+        self.opponent_moves = self.board.legal_moves
+        self.opponent_moves_total = len(list(self.opponent_moves))
+        self.opponent_attacks = self.get_attacks_total(self.opponent_moves)
+        self.opponent_castling_rights = self.get_castling_rights_sum()
+
+    def get_attacks_total(self, moves):
+        return sum([self.board.is_capture(move) for move in moves])
+
+    def get_castling_rights_sum(self):
+        return (self.board.has_kingside_castling_rights(self.turn),
+                self.board.has_queenside_castling_rights(self.turn)).count(True)
 
     def get_features(self):
         """Get features from board and return a dictionary
 
-        TODO: Select and get features
+        TODO: Improve features
 
         """
-        features = {}
-        features.update({"side_to_move", self.board.turn})
-        return features
+        return {
+            "fen": self.board.fen(),
+            "turn": int(self.turn),
+            "check": int(self.check),
+            "moves_total": self.moves_total,
+            "attacks": self.attacks,
+            "castling_rights": self.castling_rights,
+            "opponent_moves_total": self.opponent_moves_total,
+            "opponent_attacks": self.opponent_attacks,
+            "opponent_castling_rights": self.opponent_castling_rights
+        }
+
+    @staticmethod
+    def get_feature_keys():
+        default_extractor = BoardFeatureExtractor(chess.Board().fen())
+        return list(default_extractor.get_features().keys())
+
+
+class FeatureCsvWriter:
+    def __init__(self, input_path, output_path):
+        self.input_path = input_path
+        self.output_path = output_path
+
+    def run(self):
+        with open(file=self.output_path, mode="w") as output_file:
+            feature_names = BoardFeatureExtractor.get_feature_keys()
+            output_file.write("".join([key + "," for key in feature_names]))
+            output_file.write("evaluation\n")
+            with open(file=self.input_path, mode="r") as input_file:
+                next(input_file)
+                for line in input_file:
+                    values = line.split(",")
+                    features = BoardFeatureExtractor(values[0]).get_features()
+                    evaluation = values[1]
+                    for feature in feature_names:
+                        output_file.write(str(features.get(feature)))
+                        output_file.write(",")
+                    output_file.write(evaluation.strip())
+                    output_file.write("\n")
