@@ -13,8 +13,8 @@ containing board positions with corresponding engine evaluations.
 
 Engine:
 - [x] Best move search with _n_ depth using negamax
-- [ ] Search tree alpha-beta pruning
-- [ ] Quiescence search
+- [x] Search tree alpha-beta pruning
+- [x] Quiescence search
 - [ ] UCI protocol interface
 - [ ] Beat amateur player
 
