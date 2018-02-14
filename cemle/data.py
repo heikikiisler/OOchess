@@ -1,6 +1,8 @@
 import pandas as pd
 import chess
 
+from cemle import util
+
 
 class EngineValues:
     def __init__(self, file_name):
@@ -86,23 +88,6 @@ class CsvGenerator:
                     print("Finished game {}, completion [{:.1f}%]".format(i, float(i / total_games) * 100))
 
 
-class PgnInfoRemover:
-    def __init__(self, input_path, output_path):
-        self.input_path = input_path
-        self.output_path = output_path
-
-    def run(self):
-        line_starts = ("a", "b", "c", "d", "e", "f", "g")
-        game_results = (" 1-0", " 1/2-1/2", " 0-1")
-        with open(file=self.input_path, mode="r") as input_file:
-            with open(file=self.output_path, mode="w") as output_file:
-                for line in input_file:
-                    if line.startswith(line_starts):
-                        for game_result in game_results:
-                            line = line.replace(game_result, "")
-                        output_file.write(line.lower())
-
-
 class BoardFeatureExtractor:
     def __init__(self, fen):
         self.board = chess.Board(fen=fen)
@@ -150,24 +135,39 @@ class BoardFeatureExtractor:
         return list(default_extractor.get_features().keys())
 
 
-class FeatureCsvWriter:
-    def __init__(self, input_path, output_path):
-        self.input_path = input_path
-        self.output_path = output_path
+def remove_pgn_info(input_path, output_path):
+    line_starts = ("a", "b", "c", "d", "e", "f", "g")
+    game_results = (" 1-0", " 1/2-1/2", " 0-1")
+    with open(file=input_path, mode="r") as input_file:
+        with open(file=output_path, mode="w") as output_file:
+            for line in input_file:
+                if line.startswith(line_starts):
+                    for game_result in game_results:
+                        line = line.replace(game_result, "")
+                    output_file.write(line.lower())
 
-    def run(self):
-        with open(file=self.output_path, mode="w") as output_file:
-            feature_names = BoardFeatureExtractor.get_feature_keys()
-            output_file.write("".join([key + "," for key in feature_names]))
-            output_file.write("evaluation\n")
-            with open(file=self.input_path, mode="r") as input_file:
-                next(input_file)
-                for line in input_file:
-                    values = line.split(",")
-                    features = BoardFeatureExtractor(values[0]).get_features()
-                    evaluation = values[1]
-                    for feature in feature_names:
-                        output_file.write(str(features.get(feature)))
-                        output_file.write(",")
-                    output_file.write(evaluation.strip())
-                    output_file.write("\n")
+
+def write_features_csv(input_path, output_path):
+    i = 0
+    timer = util.Timer("Time lapsed: ")
+    with open(file=output_path, mode="w") as output_file:
+        feature_names = BoardFeatureExtractor.get_feature_keys()
+        output_file.write("".join([key + "," for key in feature_names]))
+        output_file.write("evaluation\n")
+        with open(file=input_path, mode="r") as input_file:
+            next(input_file)
+            for line in input_file:
+                values = line.split(",")
+                features = BoardFeatureExtractor(values[0]).get_features()
+                evaluation = values[1]
+                for feature in feature_names:
+                    output_file.write(str(features.get(feature)))
+                    output_file.write(",")
+                output_file.write(evaluation.strip())
+                output_file.write("\n")
+                if i % 10000 == 0:
+                    print("Finished processing line {}".format(i))
+                    timer.print_progress()
+                i += 1
+    print("\nTotal:")
+    timer.print_progress()
