@@ -1,5 +1,7 @@
 import chess
 
+from cemle import config
+
 
 class Engine:
     PIECE_VALUES = {"P": 1, "p": -1, "B": 3, "b": -3, "N": 3, "n": -3, "R": 5, "r": -5, "Q": 9, "q": -9}
@@ -14,8 +16,6 @@ class Engine:
         if self.board.is_game_over():
             return None
         sorted_moves = self.get_evaluated_moves_alpha_beta()
-        print(self.board.turn)
-        print(sorted_moves)
         return sorted_moves[0][0]
 
     def get_board_evaluation(self):
@@ -93,3 +93,7 @@ class Engine:
 
     def get_captures(self):
         return [move for move in self.board.legal_moves if self.board.is_capture(move)]
+
+
+def get_default():
+    return Engine(chess.Board(), config.engine_depth)
