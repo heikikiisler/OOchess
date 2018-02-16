@@ -15,7 +15,7 @@ Engine:
 - [x] Best move search with _n_ depth using negamax
 - [x] Search tree alpha-beta pruning
 - [x] Quiescence search
-- [ ] UCI protocol interface
+- [x] UCI protocol interface
 - [ ] Beat amateur player
 
 Learning, board position evaluation function:

@@ -94,6 +94,17 @@ class Engine:
     def get_captures(self):
         return [move for move in self.board.legal_moves if self.board.is_capture(move)]
 
+    def stop_and_get_best_move(self):
+        """Stop thinking and return currently best move.
+
+        TODO: Implement
+
+        """
+        return
+
+    def reset(self):
+        self.board = chess.Board()
+
 
 def get_default():
     return Engine(chess.Board(), config.engine_depth)

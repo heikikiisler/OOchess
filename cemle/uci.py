@@ -28,12 +28,17 @@ class UciEngine:
             moves_input = uci_input.split(" ")
             opponent_move = moves_input[len(moves_input) - 1]
             self.engine.board.push(chess.Move.from_uci(opponent_move))
-            best_move = self.engine.get_best_move()
-            best_move_uci = best_move.uci()
-            self.engine.board.push(best_move)
-            print("bestmove " + best_move_uci)
+            self.move_best_move()
         elif "uci" == uci_input:
             print("uciok")
+            print("id name cemle")
+            print("id author Heiki Rein Kiisler")
+        elif "quit" == uci_input:
+            print("Quitting, bye!")
+            quit()
+        elif "stop" == uci_input:
+            # TODO: Stop and move
+            print("Stopping not implemented yet")
         elif "isready" == uci_input:
             print("readyok")
         elif "ucinewgame" in uci_input:
@@ -41,14 +46,8 @@ class UciEngine:
 
         self.process_uci()
 
-    def send_uci(self, command):
-        """Send UCI commands
-
-        TODO: Add support for commands:
-
-        uciok
-        readyok
-        ...
-
-        """
-        return
+    def move_best_move(self):
+        best_move = self.engine.get_best_move()
+        best_move_uci = best_move.uci()
+        self.engine.board.push(best_move)
+        print("bestmove " + best_move_uci)
