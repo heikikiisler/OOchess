@@ -89,8 +89,14 @@ class CsvGenerator:
 
 
 class BoardFeatureExtractor:
+    PIECES = ("Q", "q", "R", "r", "B", "b", "N", "n", "P", "p")
+
     def __init__(self, fen):
         self.board = chess.Board(fen=fen)
+        self.fen_pieces = self.get_fen_piece_string()
+
+        self.piece_counts = ((piece, self.get_piece_count(piece)) for piece in self.PIECES)
+
         self.turn = self.board.turn
         self.check = self.board.is_check()
         self.moves = self.board.legal_moves
@@ -103,6 +109,12 @@ class BoardFeatureExtractor:
         self.opponent_moves_total = len(list(self.opponent_moves))
         self.opponent_attacks = self.get_attacks_total(self.opponent_moves)
         self.opponent_castling_rights = self.get_castling_rights_sum()
+
+    def get_fen_piece_string(self):
+        return self.board.fen().split(" ")[0]
+
+    def get_piece_count(self, piece):
+        return self.fen_pieces.count(piece)
 
     def get_attacks_total(self, moves):
         return sum([self.board.is_capture(move) for move in moves])
@@ -117,7 +129,7 @@ class BoardFeatureExtractor:
         TODO: Improve features
 
         """
-        return {
+        features = {
             "fen": self.board.fen(),
             "turn": int(self.turn),
             "check": int(self.check),
@@ -128,6 +140,9 @@ class BoardFeatureExtractor:
             "opponent_attacks": self.opponent_attacks,
             "opponent_castling_rights": self.opponent_castling_rights
         }
+        for piece_count in self.piece_counts:
+            features.update({piece_count[0]: piece_count[1]})
+        return features
 
     @staticmethod
     def get_feature_keys():
