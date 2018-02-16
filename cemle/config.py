@@ -13,3 +13,6 @@ features_csv_path = config.get("file_paths", "features_csv")
 
 # Engine parameters
 engine_depth = int(config.get("engine", "depth"))
+
+# Machine learning
+linear_regression_coefficients_path = config.get("machine_learning", "linear_regression_coefficients_path")

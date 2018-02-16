@@ -7,3 +7,6 @@ features_csv=../data/features.csv
 
 [engine]
 depth=2
+
+[machine_learning]
+linear_regression_coefficients_path=../data/coefficients.csv

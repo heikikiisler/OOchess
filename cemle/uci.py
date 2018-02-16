@@ -12,13 +12,9 @@ class UciEngine:
 
         TODO: Add support for commands:
 
-        uci
-        isready
-        ucinewgame
         go
         position
         stop
-        quit
         ...
 
         """

@@ -1,6 +1,6 @@
 import chess
 
-from cemle import config
+from cemle import config, evaluation
 
 
 class Engine:
@@ -32,7 +32,7 @@ class Engine:
                 return self.MIN_VALUE
             elif result == "1/2-1/2":
                 return 0
-        return self.get_material_value()
+        return evaluation.get_linear_regression_evaluation(self.board)
 
     def get_board_evaluation_by_side(self):
         if self.board.turn == chess.WHITE:
