@@ -1,7 +1,7 @@
 import chess
 import pandas as pd
 
-from cemle import util
+from cemle import util, evaluation
 
 
 class EngineValues:
@@ -60,9 +60,9 @@ class CsvGenerator:
         for i in range(0, total_evaluations):
             board.push_uci(moves[i])
             fen = board.fen()
-            evaluation = evaluations[i]
-            if evaluation != "NA":
-                positions.append((fen, evaluation))
+            board_evaluation = evaluations[i]
+            if board_evaluation != "NA":
+                positions.append((fen, board_evaluation))
         return positions
 
     def generate_csv_with_all_games(self, file_path):
@@ -88,80 +88,6 @@ class CsvGenerator:
                     print("Finished game {}, completion [{:.1f}%]".format(i, float(i / total_games) * 100))
 
 
-class BoardFeatureExtractor:
-    PIECES = ("Q", "q", "R", "r", "B", "b", "N", "n", "P", "p")
-
-    def __init__(self, board):
-        self.board = board
-        self.fen_pieces = self.get_fen_piece_string()
-
-        self.piece_counts = ((piece, self.get_piece_count(piece)) for piece in self.PIECES)
-
-        self.turn = self.board.turn
-
-        self.moves = self.board.legal_moves
-        self.moves_total = len(list(self.moves))
-        self.attacks = self.get_attacks_total(self.moves)
-        self.castling_rights = self.get_castling_rights_sum()
-
-        self.board.push_uci("0000")  # Null move
-        self.opponent_moves = self.board.legal_moves
-        self.opponent_moves_total = len(list(self.opponent_moves))
-        self.opponent_attacks = self.get_attacks_total(self.opponent_moves)
-        self.opponent_castling_rights = self.get_castling_rights_sum()
-        self.board.pop()  # Undo Null move
-
-        self.white_moves_total = self.moves_total if self.turn else self.opponent_moves_total
-        self.white_attacks = self.attacks if self.turn else self.opponent_attacks
-        self.white_castling_rights = self.castling_rights if self.turn else self.opponent_castling_rights
-        self.white_in_check = 1 if self.turn & self.board.is_check() else 0
-
-        self.black_moves_total = self.moves_total if not self.turn else self.opponent_moves_total
-        self.black_attacks = self.attacks if not self.turn else self.opponent_attacks
-        self.black_castling_rights = self.castling_rights if not self.turn else self.opponent_castling_rights
-        self.black_in_check = 1 if not self.turn & self.board.is_check() else 0
-
-    def get_fen_piece_string(self):
-        return self.board.fen().split(" ")[0]
-
-    def get_piece_count(self, piece):
-        return self.fen_pieces.count(piece)
-
-    def get_attacks_total(self, moves):
-        return sum([self.board.is_capture(move) for move in moves])
-
-    def get_castling_rights_sum(self):
-        return (self.board.has_kingside_castling_rights(self.turn),
-                self.board.has_queenside_castling_rights(self.turn)).count(True)
-
-    def get_features(self):
-        """Get features from board and return a dictionary
-
-        TODO: Improve features
-
-        """
-        features = {
-            "fen": self.board.fen(),
-            "turn": int(self.turn),
-            "white_moves_total": self.white_moves_total,
-            "white_attacks": self.white_attacks,
-            "white_castling_rights": self.white_castling_rights,
-            "white_check": int(self.white_in_check),
-            "black_moves_total": self.black_moves_total,
-            "black_attacks": self.black_attacks,
-            "black_castling_rights": self.black_castling_rights,
-            "black_check": int(self.black_in_check),
-        }
-        for piece_count in self.piece_counts:
-            features.update({piece_count[0]: piece_count[1]})
-        return features
-
-    @staticmethod
-    def get_feature_keys():
-        default_extractor = BoardFeatureExtractor(chess.Board())
-        return list(default_extractor.get_features().keys())
-
-
 def remove_pgn_info(input_path, output_path):
     line_starts = ("a", "b", "c", "d", "e", "f", "g")
     game_results = (" 1-0", " 1/2-1/2", " 0-1")
@@ -178,19 +104,19 @@ def write_features_csv(input_path, output_path):
     i = 0
     timer = util.Timer("Time lapsed: ")
     with open(file=output_path, mode="w") as output_file:
-        feature_names = BoardFeatureExtractor.get_feature_keys()
+        feature_names = evaluation.BoardFeatureExtractor.get_feature_keys()
         output_file.write("".join([key + "," for key in feature_names]))
         output_file.write("evaluation\n")
         with open(file=input_path, mode="r") as input_file:
             next(input_file)
             for line in input_file:
                 values = line.split(",")
-                features = BoardFeatureExtractor(chess.Board(fen=values[0])).get_features()
-                evaluation = values[1]
+                features = evaluation.BoardFeatureExtractor(chess.Board(fen=values[0])).get_features()
+                board_evaluation = values[1]
                 for feature in feature_names:
                     output_file.write(str(features.get(feature)))
                     output_file.write(",")
-                output_file.write(evaluation.strip())
+                output_file.write(board_evaluation.strip())
                 output_file.write("\n")
                 if i % 10000 == 0:
                     print("Finished processing line {}".format(i))

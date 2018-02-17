@@ -38,7 +38,9 @@ class UciEngine:
         elif "isready" == uci_input:
             print("readyok")
         elif "ucinewgame" in uci_input:
-            self.engine.board = chess.Board()
+            self.engine.reset()
+        else:
+            print("[cemle] Could not process command: " + uci_input)
 
         self.process_uci()
 
