@@ -102,7 +102,7 @@ def remove_pgn_info(input_path, output_path):
 
 def write_features_csv(input_path, output_path):
     i = 0
-    timer = util.Timer("Time lapsed: ")
+    timer = util.Timer()
     with open(file=output_path, mode="w") as output_file:
         feature_names = evaluation.BoardFeatureExtractor.get_feature_keys()
         output_file.write("".join([key + "," for key in feature_names]))
@@ -120,7 +120,7 @@ def write_features_csv(input_path, output_path):
                 output_file.write("\n")
                 if i % 10000 == 0:
                     print("Finished processing line {}".format(i))
-                    timer.print_progress()
+                    timer.print_progress("Time lapsed: ")
                 i += 1
     print("\nTotal:")
     timer.print_progress()

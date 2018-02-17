@@ -6,10 +6,12 @@ from cemle import config
 def get_coefficients():
     with open(file=config.linear_regression_coefficients_path, mode="r") as file:
         file.readline()
-        return file.readline().split(",")
+        coefficients = file.readline().split(",")
+        return [int(i) for i in coefficients]
 
 
 LINEAR_REGRESSION_COEFFICIENTS = get_coefficients()
+COEFFICIENTS_LENGTH = len(LINEAR_REGRESSION_COEFFICIENTS)
 
 
 class BoardFeatureExtractor:
@@ -23,14 +25,14 @@ class BoardFeatureExtractor:
 
         self.turn = self.board.turn
 
-        self.moves = self.board.legal_moves
-        self.moves_total = len(list(self.moves))
+        self.moves = list(self.board.legal_moves)
+        self.moves_total = len(self.moves)
         self.attacks = self.get_attacks_total(self.moves)
         self.castling_rights = self.get_castling_rights_sum()
 
         self.board.push_uci("0000")  # Null move
-        self.opponent_moves = self.board.legal_moves
-        self.opponent_moves_total = len(list(self.opponent_moves))
+        self.opponent_moves = list(self.board.legal_moves)
+        self.opponent_moves_total = len(self.opponent_moves)
         self.opponent_attacks = self.get_attacks_total(self.opponent_moves)
         self.opponent_castling_rights = self.get_castling_rights_sum()
         self.board.pop()  # Undo Null move
@@ -46,6 +48,7 @@ class BoardFeatureExtractor:
         self.black_in_check = 1 if not self.turn & self.board.is_check() else 0
 
     def get_fen_piece_string(self):
+        # 0.8 s for 10000
         return self.board.fen().split(" ")[0]
 
     def get_piece_count(self, piece):
@@ -87,9 +90,9 @@ class BoardFeatureExtractor:
 
 
 def get_linear_regression_evaluation(board):
-    features = list(BoardFeatureExtractor(board).get_features().values())[1:]
+    extractor = BoardFeatureExtractor(board)
+    features = list(extractor.get_features().values())[1:]
     evaluation = 0
-    evaluation_pairs = zip(features, LINEAR_REGRESSION_COEFFICIENTS)
-    for evaluation_pair in evaluation_pairs:
-        evaluation += int(evaluation_pair[0]) * int(evaluation_pair[1])
+    for i in range(0, COEFFICIENTS_LENGTH):
+        evaluation += LINEAR_REGRESSION_COEFFICIENTS[i] * int(features[1])
     return evaluation
