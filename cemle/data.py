@@ -122,5 +122,4 @@ def write_features_csv(input_path, output_path):
                     print("Finished processing line {}".format(i))
                     timer.print_progress("Time lapsed: ")
                 i += 1
-    print("\nTotal:")
-    timer.print_progress()
+    timer.print_progress("\nTotal: ")
