@@ -19,11 +19,12 @@ class UciEngine:
 
         """
         uci_input = input()
-
-        if "moves" in uci_input:
+        if "position startpos" in uci_input:
             moves_input = uci_input.split(" ")
-            opponent_move = moves_input[len(moves_input) - 1]
-            self.engine.board.push(chess.Move.from_uci(opponent_move))
+            self.engine.reset()
+            if len(moves_input) > 3:
+                for i in range(3, len(moves_input)):
+                    self.engine.board.push(chess.Move.from_uci(moves_input[i]))
             self.move_best_move()
         elif "uci" == uci_input:
             print("uciok")

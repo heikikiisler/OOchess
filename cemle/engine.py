@@ -4,7 +4,6 @@ from cemle import config, evaluation
 
 
 class Engine:
-    PIECE_VALUES = {"P": 1, "p": -1, "B": 3, "b": -3, "N": 3, "n": -3, "R": 5, "r": -5, "Q": 9, "q": -9}
     MAX_VALUE = 2147483647
     MIN_VALUE = -2147483648
 
@@ -16,6 +15,7 @@ class Engine:
         if self.board.is_game_over():
             return None
         sorted_moves = self.get_evaluated_moves_alpha_beta()
+        print("[cemle] sorted moves: " + str(sorted_moves))
         return sorted_moves[0][0]
 
     def get_board_evaluation(self):
@@ -38,15 +38,6 @@ class Engine:
         if self.board.turn == chess.WHITE:
             return self.get_board_evaluation()
         return -self.get_board_evaluation()
-
-    def get_material_value(self):
-        material_sum = 0
-        fen_string = self.get_fen_piece_string()
-        for i in range(0, len(fen_string)):
-            char = fen_string[i]
-            if char in self.PIECE_VALUES.keys():
-                material_sum += self.PIECE_VALUES[char]
-        return material_sum
 
     def get_fen_piece_string(self):
         return self.board.fen().split(" ")[0]

@@ -15,41 +15,44 @@ COEFFICIENTS_LENGTH = len(LINEAR_REGRESSION_COEFFICIENTS)
 
 
 class BoardFeatureExtractor:
+    PIECE_VALUES = {"P": 1, "p": -1, "B": 3, "b": -3, "N": 3, "n": -3, "R": 5, "r": -5, "Q": 9, "q": -9}
     PIECES = ("Q", "q", "R", "r", "B", "b", "N", "n", "P", "p")
 
     def __init__(self, board):
         self.board = board
         self.fen_pieces = self.get_fen_piece_string()
 
-        self.piece_counts = ((piece, self.get_piece_count(piece)) for piece in self.PIECES)
-
+        self.material_value = self.get_material_value()
         self.turn = self.board.turn
 
         self.moves = list(self.board.legal_moves)
         self.moves_total = len(self.moves)
         self.attacks = self.get_attacks_total(self.moves)
-        self.castling_rights = self.get_castling_rights_sum()
 
         self.board.push_uci("0000")  # Null move
         self.opponent_moves = list(self.board.legal_moves)
         self.opponent_moves_total = len(self.opponent_moves)
         self.opponent_attacks = self.get_attacks_total(self.opponent_moves)
-        self.opponent_castling_rights = self.get_castling_rights_sum()
         self.board.pop()  # Undo Null move
 
         self.white_moves_total = self.moves_total if self.turn else self.opponent_moves_total
         self.white_attacks = self.attacks if self.turn else self.opponent_attacks
-        self.white_castling_rights = self.castling_rights if self.turn else self.opponent_castling_rights
-        self.white_in_check = 1 if self.turn & self.board.is_check() else 0
 
         self.black_moves_total = self.moves_total if not self.turn else self.opponent_moves_total
         self.black_attacks = self.attacks if not self.turn else self.opponent_attacks
-        self.black_castling_rights = self.castling_rights if not self.turn else self.opponent_castling_rights
-        self.black_in_check = 1 if not self.turn & self.board.is_check() else 0
 
     def get_fen_piece_string(self):
         # 0.8 s for 10000
         return self.board.fen().split(" ")[0]
+
+    def get_material_value(self):
+        material_sum = 0
+        fen_string = self.fen_pieces
+        for i in range(0, len(fen_string)):
+            char = fen_string[i]
+            if char in self.PIECE_VALUES.keys():
+                material_sum += self.PIECE_VALUES[char]
+        return material_sum
 
     def get_piece_count(self, piece):
         return self.fen_pieces.count(piece)
@@ -69,18 +72,13 @@ class BoardFeatureExtractor:
         """
         features = {
             "fen": self.board.fen(),
-            "turn": int(self.turn),
+            "material": self.material_value,
+            # "turn": int(self.turn),
             "white_moves_total": self.white_moves_total,
             "white_attacks": self.white_attacks,
-            "white_castling_rights": self.white_castling_rights,
-            "white_check": int(self.white_in_check),
             "black_moves_total": self.black_moves_total,
-            "black_attacks": self.black_attacks,
-            "black_castling_rights": self.black_castling_rights,
-            "black_check": int(self.black_in_check),
+            "black_attacks": self.black_attacks
         }
-        for piece_count in self.piece_counts:
-            features.update({piece_count[0]: piece_count[1]})
         return features
 
     @staticmethod
