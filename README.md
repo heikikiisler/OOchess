@@ -35,6 +35,8 @@ To play against the UCI engine, only Python 3.6 and python-chess are needed.
 Use _cemle/uci.bat_ or _cemle/uci.sh_ to link engine to Arena or other GUIs.
 Alternatively you can play on the command line with UCI commands by executing the same scripts.
 
+A sample of the processed data, linking FEN-s to Stockfish evaluations can be found in _data/fen_evaluations.csv.sample_
+
 ### Dependencies
 
 * Python 3.6
