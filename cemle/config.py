@@ -12,7 +12,9 @@ processed_uci_moves_path = config.get("file_paths", "processed_uci_moves")
 features_csv_path = config.get("file_paths", "features_csv")
 
 # Engine parameters
-engine_depth = int(config.get("engine", "depth"))
+engine_min_depth = int(config.get("engine", "min_depth"))
+engine_max_depth = int(config.get("engine", "max_depth"))
+engine_max_move_time = int(config.get("engine", "max_move_time"))
 
 # Machine learning
 linear_regression_coefficients_path = config.get("machine_learning", "linear_regression_coefficients_path")

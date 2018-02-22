@@ -1,6 +1,7 @@
 import chess
 
 from cemle import config, evaluation
+from cemle.util import log
 
 
 class Engine:
@@ -15,7 +16,7 @@ class Engine:
         if self.board.is_game_over():
             return None
         sorted_moves = self.get_evaluated_moves_alpha_beta()
-        print("[cemle] sorted moves: " + str(sorted_moves))
+        log("sorted moves: " + str(sorted_moves))
         return sorted_moves[0][0]
 
     def get_board_evaluation(self):
@@ -98,4 +99,4 @@ class Engine:
 
 
 def get_default():
-    return Engine(chess.Board(), config.engine_depth)
+    return Engine(chess.Board(), config.engine_min_depth)

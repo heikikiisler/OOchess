@@ -1,6 +1,7 @@
 import chess
 
 from cemle import engine
+from cemle.util import log
 
 
 class UciEngine:
@@ -31,17 +32,17 @@ class UciEngine:
             print("id name cemle")
             print("id author Heiki Rein Kiisler")
         elif "quit" == uci_input:
-            print("Quitting, bye!")
+            log("Quitting, bye!")
             quit()
         elif "stop" == uci_input:
             # TODO: Stop and move
-            print("Stopping not implemented yet")
+            log("Stopping not implemented yet")
         elif "isready" == uci_input:
             print("readyok")
         elif "ucinewgame" in uci_input:
             self.engine.reset()
         else:
-            print("[cemle] Could not process command: " + uci_input)
+            log("Could not process command: " + uci_input)
 
         self.process_uci()
 

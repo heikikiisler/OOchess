@@ -1,4 +1,5 @@
 from timeit import default_timer as timer
+import logging
 
 
 class Timer:
@@ -13,3 +14,11 @@ class Timer:
 
     def get_progress(self):
         return timer() - self.start
+
+
+logger = logging.getLogger("[cemle] ")
+logging.basicConfig(level=logging.INFO)
+
+
+def log(message):
+    logger.info(msg=message)
