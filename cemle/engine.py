@@ -1,4 +1,5 @@
 import chess
+from chess.polyglot import zobrist_hash
 
 from cemle import config, evaluation
 from cemle.util import log
@@ -11,6 +12,7 @@ class Engine:
     def __init__(self, board, depth):
         self.board = board
         self.depth = depth
+        self.zobrist_table = {}
 
     def get_best_move(self):
         if self.board.is_game_over():
@@ -96,6 +98,15 @@ class Engine:
 
     def reset(self):
         self.board = chess.Board()
+
+    def get_zobrist_hash(self):
+        return zobrist_hash(self.board)
+
+    def save_hash_evaluation(self, board_evaluation):
+        self.zobrist_table.update({self.get_zobrist_hash(), board_evaluation})
+
+    def has_table_evaluation(self, board_hash):
+        return board_hash in self.zobrist_table
 
 
 def get_default():
