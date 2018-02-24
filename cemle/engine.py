@@ -18,7 +18,6 @@ class Engine:
         if self.board.is_game_over():
             return None
         sorted_moves = self.get_evaluated_moves_alpha_beta()
-        log("sorted moves: " + str(sorted_moves))
         return sorted_moves[0][0]
 
     def get_board_evaluation(self):
@@ -27,6 +26,9 @@ class Engine:
         Temporary implementation to develop engine.
 
         """
+        current_hash = self.get_zobrist_hash()
+        if current_hash in self.zobrist_table:
+            return self.zobrist_table.get(current_hash)
         if self.board.is_game_over():
             result = self.board.result()
             if result == "1-0":
@@ -35,7 +37,9 @@ class Engine:
                 return self.MIN_VALUE
             elif result == "1/2-1/2":
                 return 0
-        return evaluation.get_linear_regression_evaluation(self.board)
+        current_evaluation = evaluation.get_linear_regression_evaluation(self.board)
+        self.zobrist_table[current_hash] = current_evaluation
+        return current_evaluation
 
     def get_board_evaluation_by_side(self):
         if self.board.turn == chess.WHITE:
