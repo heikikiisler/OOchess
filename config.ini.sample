@@ -7,7 +7,7 @@ features_csv=../data/features.csv
 
 [engine]
 min_depth=1
-max_depth=2
+max_depth=3
 max_move_time=10
 
 [machine_learning]
