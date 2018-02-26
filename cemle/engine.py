@@ -122,7 +122,6 @@ class Engine:
     def reset(self):
         self.board = chess.Board()
         self.move_timer = util.Timer()
-        self.zobrist_table = {}
         self.current_best_move = None
         self.achieved_depth = -1
 
