@@ -10,7 +10,7 @@ class Timer:
         self.start = timer()
 
     def print_progress(self, print_message):
-        print("{}{}".format(print_message, self.get_progress()))
+        print("{}{:.2f} seconds".format(print_message, self.get_progress()))
 
     def get_progress(self):
         return timer() - self.start

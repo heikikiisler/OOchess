@@ -22,7 +22,7 @@ class UciEngine:
         uci_input = input()
         if "position startpos" in uci_input:
             moves_input = uci_input.split(" ")
-            self.engine.reset()
+            self.engine.reset(reset_board=True)
             if len(moves_input) > 3:
                 for i in range(3, len(moves_input)):
                     self.engine.board.push(chess.Move.from_uci(moves_input[i]))
@@ -40,7 +40,7 @@ class UciEngine:
         elif "isready" == uci_input:
             print("readyok")
         elif "ucinewgame" in uci_input:
-            self.engine.reset()
+            self.engine.reset(reset_board=True)
         else:
             log("Could not process command: " + uci_input)
 

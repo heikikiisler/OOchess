@@ -1,4 +1,4 @@
-import operator
+from collections import OrderedDict
 
 import chess
 from chess.polyglot import zobrist_hash
@@ -19,9 +19,11 @@ class Engine:
         self.move_timer = util.Timer()
         self.zobrist_table = {}
         self.current_best_move = None
+        self.previous_iteration_ordered_moves = {}
         self.achieved_depth = -1
 
     def get_best_move(self):
+        self.reset(reset_board=False)
         if self.board.is_game_over():
             return None
         sorted_moves = self.get_iterative_best_moves_alpha_beta()
@@ -87,7 +89,11 @@ class Engine:
 
     def get_evaluated_moves_alpha_beta(self, depth):
         moves = {}
-        for move in self.board.legal_moves:
+        if len(self.previous_iteration_ordered_moves) > 0:
+            legal_moves = self.previous_iteration_ordered_moves.keys()
+        else:
+            legal_moves = self.board.legal_moves
+        for move in legal_moves:
             self.board.push(move)
             score = -self.alpha_beta(self.MIN_VALUE, self.MAX_VALUE, depth)
             self.board.pop()
@@ -98,13 +104,13 @@ class Engine:
                     self.move_timer.get_progress()))
                 break
         # Sort moves with evaluations best to worst
-        return sorted(moves.items(), key=operator.itemgetter(1), reverse=True)
+        return OrderedDict(sorted(moves.items(), key=lambda v: v[1], reverse=True))
 
     def get_iterative_best_moves_alpha_beta(self):
         evaluations = {}
         for depth in range(0, self.max_depth):
-            moves_evaluations = self.get_evaluated_moves_alpha_beta(depth)
-            evaluations.update(moves_evaluations)
+            self.previous_iteration_ordered_moves = self.get_evaluated_moves_alpha_beta(depth)
+            evaluations.update(self.previous_iteration_ordered_moves)
             self.achieved_depth = depth
         return evaluations
 
@@ -119,10 +125,12 @@ class Engine:
         """
         return
 
-    def reset(self):
-        self.board = chess.Board()
+    def reset(self, reset_board):
+        if reset_board:
+            self.board = chess.Board()
         self.move_timer = util.Timer()
         self.current_best_move = None
+        self.previous_iteration_ordered_moves = {}
         self.achieved_depth = -1
 
     def get_zobrist_hash(self):
