@@ -7,7 +7,7 @@ def get_coefficients():
     with open(file=config.linear_regression_coefficients_path, mode="r") as file:
         file.readline()
         coefficients = file.readline().split(",")
-        return [int(i) for i in coefficients]
+        return [float(i) for i in coefficients]
 
 
 LINEAR_REGRESSION_COEFFICIENTS = get_coefficients()
@@ -27,19 +27,19 @@ class BoardFeatureExtractor:
 
         self.moves = list(self.board.legal_moves)
         self.moves_total = len(self.moves)
-        self.attacks = self.get_attacks_total(self.moves)
+        self.attacks_total = self.get_attacks_total(self.moves)
 
         self.board.push_uci("0000")  # Null move
         self.opponent_moves = list(self.board.legal_moves)
         self.opponent_moves_total = len(self.opponent_moves)
-        self.opponent_attacks = self.get_attacks_total(self.opponent_moves)
+        self.opponent_attacks_total = self.get_attacks_total(self.opponent_moves)
         self.board.pop()  # Undo Null move
 
         self.white_moves_total = self.moves_total if self.turn else self.opponent_moves_total
-        self.white_attacks = self.attacks if self.turn else self.opponent_attacks
+        self.white_attacks_total = self.attacks_total if self.turn else self.opponent_attacks_total
 
         self.black_moves_total = self.moves_total if not self.turn else self.opponent_moves_total
-        self.black_attacks = self.attacks if not self.turn else self.opponent_attacks
+        self.black_attacks_total = self.attacks_total if not self.turn else self.opponent_attacks_total
 
     def get_fen_piece_string(self):
         # 0.8 s for 10000
@@ -72,12 +72,9 @@ class BoardFeatureExtractor:
         """
         features = {
             "fen": self.board.fen(),
-            "material": self.material_value,
-            # "turn": int(self.turn),
-            "white_moves_total": self.white_moves_total,
-            "white_attacks": self.white_attacks,
-            "black_moves_total": self.black_moves_total,
-            "black_attacks": self.black_attacks
+            "material_total": self.material_value,
+            "moves_total": self.white_moves_total - self.black_moves_total,
+            "attacks_total": self.white_attacks_total - self.black_attacks_total,
         }
         return features
 
@@ -92,5 +89,5 @@ def get_linear_regression_evaluation(board):
     features = list(extractor.get_features().values())[1:]
     evaluation = 0
     for i in range(0, COEFFICIENTS_LENGTH):
-        evaluation += LINEAR_REGRESSION_COEFFICIENTS[i] * int(features[1])
+        evaluation += LINEAR_REGRESSION_COEFFICIENTS[i] * float(features[1])
     return evaluation

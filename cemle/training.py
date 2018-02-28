@@ -21,7 +21,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
 
 lr = LinearRegression(fit_intercept=True, normalize=True)
 lr.fit(X_train, y_train)
-coefficients = [int(i) for i in list(lr.coef_)]
+coefficients = [round(i, 3) for i in list(lr.coef_)]
 
 
 def plotting():
