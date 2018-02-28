@@ -5,12 +5,14 @@ from sklearn.model_selection import train_test_split
 
 from cemle import config
 
-lines_range = (0, 100000)
 
-df = pd.read_csv(filepath_or_buffer=config.features_csv_path,
-                 skiprows=(range(1, lines_range[0])),
-                 nrows=(lines_range[1] - lines_range[0])
-                 )
+def read_fen_evaluation(lines_start=0, lines_end=0):
+    return pd.read_csv(filepath_or_buffer=config.features_csv_path,
+                       skiprows=(range(1, lines_start)),
+                       nrows=(None if lines_end == 0 else (lines_end - lines_start)))
+
+
+df = read_fen_evaluation()
 
 # Skip fen and evaluation
 headers = list(df)[1:-1]
@@ -29,9 +31,9 @@ def plotting():
     alphas = []
     for i in range(0, 20):
         alpha = 0.5 ** i
-        lr = Ridge(fit_intercept=True, normalize=True, tol=0.01, alpha=alpha)
-        lr.fit(X_train, y_train)
-        score = lr.score(X_test, y_test)
+        ridge = Ridge(fit_intercept=True, normalize=True, tol=0.01, alpha=alpha)
+        ridge.fit(X_train, y_train)
+        score = ridge.score(X_test, y_test)
         print("alpha: {}, score: {}".format(alpha, score))
         print(coefficients)
         if score > -1:
