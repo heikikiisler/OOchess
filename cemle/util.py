@@ -15,6 +15,9 @@ class Timer:
     def get_progress(self):
         return timer() - self.start
 
+    def get_progress_formatted(self):
+        return "{:.2f}".format(self.get_progress())
+
 
 logger = logging.getLogger("[cemle] ")
 logging.basicConfig(level=logging.INFO)

@@ -13,6 +13,7 @@ class Engine:
 
     def __init__(self, board, min_depth, max_depth, max_time):
         self.board = board
+        self.side = chess.WHITE if self.board.turn == chess.WHITE else chess.BLACK
         self.min_depth = min_depth
         self.max_depth = max_depth
         self.max_time = max_time
@@ -21,6 +22,8 @@ class Engine:
         self.current_best_move = None
         self.previous_iteration_ordered_moves = {}
         self.achieved_depth = -1
+        self.time_left = 300000
+        self.opponent_time_left = 300000
 
     def get_best_move(self):
         self.reset(reset_board=False)
@@ -101,7 +104,7 @@ class Engine:
             if self.achieved_depth >= self.min_depth and self.max_time < self.move_timer.get_progress():
                 log("Exceeded max_time of {}s, current thinking time {}s".format(
                     self.max_time,
-                    self.move_timer.get_progress()))
+                    self.move_timer.get_progress_formatted()))
                 break
         # Sort moves with evaluations best to worst
         return OrderedDict(sorted(moves.items(), key=lambda v: v[1], reverse=True))
@@ -141,6 +144,14 @@ class Engine:
 
     def has_table_evaluation(self, board_hash):
         return board_hash in self.zobrist_table
+
+    def set_times_left(self, white_time, black_time):
+        if self.side == chess.WHITE:
+            self.time_left = white_time
+            self.opponent_time_left = black_time
+        else:
+            self.time_left = black_time
+            self.opponent_time_left = white_time
 
 
 def get_default():

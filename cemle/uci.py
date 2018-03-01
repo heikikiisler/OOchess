@@ -41,6 +41,11 @@ class UciEngine:
             print("readyok")
         elif "ucinewgame" in uci_input:
             self.engine.reset(reset_board=True)
+        elif "go" in uci_input:
+            moves_input = uci_input.split(" ")
+            white_time = moves_input[moves_input.index("wtime") + 1]
+            black_time = moves_input[moves_input.index("btime") + 1]
+            self.engine.set_times_left(white_time=white_time, black_time=black_time)
         else:
             log("Could not process command: " + uci_input)
 

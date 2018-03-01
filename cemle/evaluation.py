@@ -21,7 +21,6 @@ class BoardFeatureExtractor:
     def __init__(self, board):
         self.board = board
         self.fen_pieces = self.get_fen_piece_string()
-
         self.material_value = self.get_material_value()
         self.turn = self.board.turn
 
@@ -30,9 +29,11 @@ class BoardFeatureExtractor:
         self.attacks_total = self.get_attacks_total(self.moves)
 
         self.board.push_uci("0000")  # Null move
+
         self.opponent_moves = list(self.board.legal_moves)
         self.opponent_moves_total = len(self.opponent_moves)
         self.opponent_attacks_total = self.get_attacks_total(self.opponent_moves)
+
         self.board.pop()  # Undo Null move
 
         self.white_moves_total = self.moves_total if self.turn else self.opponent_moves_total
@@ -42,7 +43,6 @@ class BoardFeatureExtractor:
         self.black_attacks_total = self.attacks_total if not self.turn else self.opponent_attacks_total
 
     def get_fen_piece_string(self):
-        # 0.8 s for 10000
         return self.board.fen().split(" ")[0]
 
     def get_material_value(self):
