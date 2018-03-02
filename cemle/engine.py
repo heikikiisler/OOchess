@@ -20,7 +20,7 @@ class Engine:
         self.move_timer = util.Timer()
         self.zobrist_table = {}
         self.current_best_move = None
-        self.previous_iteration_ordered_moves = {}
+        self.previous_iteration_ordered_moves = OrderedDict()
         self.achieved_depth = -1
         self.time_left = 300000
         self.opponent_time_left = 300000
@@ -30,6 +30,7 @@ class Engine:
         if self.board.is_game_over():
             return None
         sorted_moves = self.get_iterative_best_moves_alpha_beta()
+        log(sorted_moves)
         return list(sorted_moves.keys())[0]
 
     def get_board_evaluation(self):
@@ -110,10 +111,11 @@ class Engine:
         return OrderedDict(sorted(moves.items(), key=lambda v: v[1], reverse=True))
 
     def get_iterative_best_moves_alpha_beta(self):
-        evaluations = {}
+        evaluations = OrderedDict()
         for depth in range(0, self.max_depth):
             self.previous_iteration_ordered_moves = self.get_evaluated_moves_alpha_beta(depth)
             evaluations.update(self.previous_iteration_ordered_moves)
+            evaluations = OrderedDict(sorted(evaluations.items(), key=lambda move: move[1], reverse=True))
             self.achieved_depth = depth
         return evaluations
 
