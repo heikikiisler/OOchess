@@ -9,16 +9,7 @@ class UciEngine:
         self.engine = engine.get_default()
 
     def process_uci(self):
-        """Process UCI commands
-
-        TODO: Add support for commands:
-
-        go
-        position
-        stop
-        ...
-
-        """
+        """Process UCI commands."""
         uci_input = input()
         if "position startpos" in uci_input:
             moves_input = uci_input.split(" ")
@@ -35,8 +26,9 @@ class UciEngine:
             log("Quitting, bye!")
             quit()
         elif "stop" == uci_input:
-            # TODO: Stop and move
-            log("Stopping not implemented yet")
+            # TODO: Still must be executed in new thread
+            log("Stopping as soon as possible")
+            self.engine.stopped = True
         elif "isready" == uci_input:
             print("readyok")
         elif "ucinewgame" in uci_input:

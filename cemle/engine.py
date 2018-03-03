@@ -24,6 +24,7 @@ class Engine:
         self.achieved_depth = -1
         self.time_left = 300000
         self.opponent_time_left = 300000
+        self.stopped = False
 
     def get_best_move(self):
         self.reset(reset_board=False)
@@ -102,7 +103,7 @@ class Engine:
             score = -self.alpha_beta(self.MIN_VALUE, self.MAX_VALUE, depth)
             self.board.pop()
             moves[move] = score
-            if self.achieved_depth >= self.min_depth and self.max_time < self.move_timer.get_progress():
+            if self.can_keep_searching():
                 log("Exceeded max_time of {}s, current thinking time {}s".format(
                     self.max_time,
                     self.move_timer.get_progress_formatted()))
@@ -154,6 +155,11 @@ class Engine:
         else:
             self.time_left = black_time
             self.opponent_time_left = white_time
+
+    def can_keep_searching(self):
+        return not self.stopped and \
+               self.achieved_depth >= self.min_depth and \
+               self.max_time < self.move_timer.get_progress()
 
 
 def get_default():
