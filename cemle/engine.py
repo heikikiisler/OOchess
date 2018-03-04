@@ -20,7 +20,7 @@ class Engine:
         self.move_timer = util.Timer()
         self.zobrist_table = {}
         self.current_best_move = None
-        self.previous_iteration_ordered_moves = OrderedDict()
+        self.previous_iteration_ordered_moves = {}
         self.achieved_depth = -1
         self.time_left = 300000
         self.opponent_time_left = 300000
@@ -35,11 +35,6 @@ class Engine:
         return list(sorted_moves.keys())[0]
 
     def get_board_evaluation(self):
-        """Gets board evaluation, will be implemented by learning results.
-
-        Temporary implementation to develop engine.
-
-        """
         current_hash = self.get_zobrist_hash()
         if current_hash in self.zobrist_table:
             return self.zobrist_table.get(current_hash)
@@ -56,12 +51,7 @@ class Engine:
         return current_evaluation
 
     def get_board_evaluation_by_side(self):
-        if self.board.turn == chess.WHITE:
-            return self.get_board_evaluation()
-        return -self.get_board_evaluation()
-
-    def get_fen_piece_string(self):
-        return self.board.fen().split(" ")[0]
+        return self.get_board_evaluation() if self.board.turn == chess.WHITE else -self.get_board_evaluation()
 
     def alpha_beta(self, alpha, beta, depth):
         if depth == 0:
@@ -112,7 +102,7 @@ class Engine:
         return OrderedDict(sorted(moves.items(), key=lambda v: v[1], reverse=True))
 
     def get_iterative_best_moves_alpha_beta(self):
-        evaluations = OrderedDict()
+        evaluations = {}
         for depth in range(0, self.max_depth):
             self.previous_iteration_ordered_moves = self.get_evaluated_moves_alpha_beta(depth)
             evaluations.update(self.previous_iteration_ordered_moves)

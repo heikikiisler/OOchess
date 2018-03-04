@@ -15,12 +15,14 @@ COEFFICIENTS_LENGTH = len(LINEAR_REGRESSION_COEFFICIENTS)
 
 
 class BoardFeatureExtractor:
-    PIECE_VALUES = {"P": 1, "p": -1, "B": 3, "b": -3, "N": 3, "n": -3, "R": 5, "r": -5, "Q": 9, "q": -9}
+    PIECE_VALUES = {"P": 1, "p": -1, "B": 3, "b": -3, "N": 3, "n": -3,
+                    "R": 5, "r": -5, "Q": 9, "q": -9, "K": 200, "k": -200}
     PIECES = ("Q", "q", "R", "r", "B", "b", "N", "n", "P", "p")
 
-    def __init__(self, board):
-        self.board = board
-        self.fen_pieces = self.get_fen_piece_string()
+    def __init__(self, board=None, fen=None):
+        self.fen = fen
+        self.board = board if fen is None else board(fen=fen)
+        self.pieces = self.board.piece_map().values()
         self.material_value = self.get_material_value()
         self.turn = self.board.turn
 
@@ -42,20 +44,11 @@ class BoardFeatureExtractor:
         self.black_moves_total = self.moves_total if not self.turn else self.opponent_moves_total
         self.black_attacks_total = self.attacks_total if not self.turn else self.opponent_attacks_total
 
-    def get_fen_piece_string(self):
-        return self.board.fen().split(" ")[0]
-
     def get_material_value(self):
         material_sum = 0
-        fen_string = self.fen_pieces
-        for i in range(0, len(fen_string)):
-            char = fen_string[i]
-            if char in self.PIECE_VALUES.keys():
-                material_sum += self.PIECE_VALUES[char]
+        for piece in self.pieces:
+            material_sum += self.PIECE_VALUES[piece.symbol()]
         return material_sum
-
-    def get_piece_count(self, piece):
-        return self.fen_pieces.count(piece)
 
     def get_attacks_total(self, moves):
         return sum([self.board.is_capture(move) for move in moves])
@@ -70,12 +63,14 @@ class BoardFeatureExtractor:
         TODO: Improve features
 
         """
-        features = {
-            "fen": self.board.fen(),
+        features = {}
+        if self.fen is not None:
+            features.update({"fen": self.board.fen()})
+        features.update({
             "material_total": self.material_value,
             "moves_total": self.white_moves_total - self.black_moves_total,
             "attacks_total": self.white_attacks_total - self.black_attacks_total,
-        }
+        })
         return features
 
     @staticmethod
@@ -85,7 +80,7 @@ class BoardFeatureExtractor:
 
 
 def get_linear_regression_evaluation(board):
-    extractor = BoardFeatureExtractor(board)
+    extractor = BoardFeatureExtractor(board=board)
     features = list(extractor.get_features().values())[1:]
     evaluation = 0
     for i in range(0, COEFFICIENTS_LENGTH):
