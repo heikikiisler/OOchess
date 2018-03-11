@@ -45,6 +45,10 @@ A sample of the processed data, linking FEN-s to Stockfish evaluations can be fo
 * [pandas](https://pandas.pydata.org/) v0.21
 * [Learning data set](https://www.kaggle.com/c/finding-elo/data) from Kaggle
 
+### Contributing
+
+Suggestions and contributions are very welcome through issues or pull requests.
+
 ### License
 
 CEMLE is licensed under the GPL 3 as it depends on python-chess. Full information in LICENSE.txt.
