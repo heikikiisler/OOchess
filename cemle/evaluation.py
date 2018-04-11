@@ -58,11 +58,7 @@ class BoardFeatureExtractor:
                 self.board.has_queenside_castling_rights(self.turn)).count(True)
 
     def get_features(self):
-        """Get features from board and return a dictionary
-
-        TODO: Improve features
-
-        """
+        """Get features from board and return a dict."""
         features = {}
         if self.fen is not None:
             features.update({"fen": self.board.fen()})
