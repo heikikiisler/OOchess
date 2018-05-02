@@ -23,7 +23,6 @@ class UciEngine:
             fen = ""
             for i in range(2, 8):
                 fen += moves_input[i] + " "
-            log(fen)
             self.engine.reset(reset_board=True)
             self.engine.board = chess.Board(fen=fen)
             self.engine.board.push(chess.Move.from_uci(moves_input[len(moves_input) - 1]))

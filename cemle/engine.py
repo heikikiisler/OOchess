@@ -49,7 +49,7 @@ class Engine:
         if self.board.is_game_over():
             return None
         sorted_moves = self.get_iterative_best_moves_alpha_beta()
-        log(sorted_moves)
+        # log(sorted_moves)
         return list(sorted_moves.keys())[0]
 
     def get_board_evaluation(self):
