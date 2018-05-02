@@ -18,6 +18,16 @@ class UciEngine:
                 for i in range(3, len(moves_input)):
                     self.engine.board.push(chess.Move.from_uci(moves_input[i]))
             self.move_best_move()
+        elif "position fen" in uci_input:
+            moves_input = uci_input.split(" ")
+            fen = ""
+            for i in range(2, 8):
+                fen += moves_input[i] + " "
+            log(fen)
+            self.engine.reset(reset_board=True)
+            self.engine.board = chess.Board(fen=fen)
+            self.engine.board.push(chess.Move.from_uci(moves_input[len(moves_input) - 1]))
+            self.move_best_move()
         elif "uci" == uci_input:
             print("uciok")
             print("id name cemle")
@@ -35,9 +45,10 @@ class UciEngine:
             self.engine.reset(reset_board=True)
         elif "go" in uci_input:
             moves_input = uci_input.split(" ")
-            white_time = moves_input[moves_input.index("wtime") + 1]
-            black_time = moves_input[moves_input.index("btime") + 1]
-            self.engine.set_times_left(white_time=white_time, black_time=black_time)
+            if "wtime" in uci_input and "btime" in uci_input:
+                white_time = moves_input[moves_input.index("wtime") + 1]
+                black_time = moves_input[moves_input.index("btime") + 1]
+                self.engine.set_times_left(white_time=white_time, black_time=black_time)
         else:
             log("Could not process command: " + uci_input)
 
