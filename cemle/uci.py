@@ -25,7 +25,8 @@ class UciEngine:
                 fen += moves_input[i] + " "
             self.engine.reset(reset_board=True)
             self.engine.board = chess.Board(fen=fen)
-            self.engine.board.push(chess.Move.from_uci(moves_input[len(moves_input) - 1]))
+            for i in range(9, len(moves_input)):
+                self.engine.board.push(chess.Move.from_uci(moves_input[i]))
             self.move_best_move()
         elif "uci" == uci_input:
             print("uciok")
